@@ -1,6 +1,5 @@
 import csv
 import os
-from typing import List
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -14,8 +13,8 @@ def read_csv_files_to_list():
         csv_dicts_list = {}
         for filename in iterator:
             if filename.name.endswith("csv"):
-                with open(filename, "r", encoding="utf-8-sig") as f:
-                    reader = csv.DictReader(f)
+                with open(filename, "r", encoding="utf-8-sig") as f_obj:
+                    reader = csv.DictReader(f_obj)
                     csv_dicts_list[filename.name.split(".")[0]] = list(reader)
 
     return csv_dicts_list
@@ -25,19 +24,20 @@ def extract_confirmed_cases(data):
     sorted_data = dict(sorted(data.items()))
     new_data = dict.fromkeys(sorted_data.keys())
 
-    for k, v in sorted_data.items():
-        for element in v:
-            # We don't want Gibraltar or Channel Island cases
-            if ("United Kingdom" == element["Country/Region"]
+    for key, value in sorted_data.items():
+        for element in value:
+            # We don't want Gibraltar or Channel Island cases.
+            # TODO find a nicer way of doing this.
+            if (element["Country/Region"] == "United Kingdom"
                 or
-                "UK" == element["Country/Region"]) and (
+                element["Country/Region"] == "UK") and (
                     element["Province/State"] != "Gibraltar"
                     and element["Province/State"] != "Channel Islands"):
-                new_data[k] = int(element["Confirmed"])
+                new_data[key] = int(element["Confirmed"])
 
-    for k, v in new_data.items():
-        if not v:
-            new_data[k] = 0
+    for key, value in new_data.items():
+        if not value:
+            new_data[key] = 0
 
     print(new_data)
     return new_data
@@ -47,10 +47,10 @@ def zip_dates_and_cases(cases):
     dates = sorted([f.name.split(".")[0] for f in os.scandir("COVID-19-data")
                     if f.name.endswith("csv")])
 
-    d = {"dates": list(cases.keys()), "cases": list(cases.values())}
-    df = pd.DataFrame(data=d)
+    dataframe_dict = {"dates": list(cases.keys()), "cases": list(cases.values())}
+    dataframe = pd.DataFrame(data=dataframe_dict)
 
-    return dates, df
+    return dates, dataframe
 
 
 def build_line_plot(dates, dataframe):
