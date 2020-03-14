@@ -1,0 +1,46 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Helvetica Neue", "IBM Plex Serif Medium", Arial, sans-serif;
+    color: #343434;
+    background-color: #6696AE;
+}
+
+td {
+    padding-left: 10px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    text-align: center;
+}
+
+th {
+    text-decoration: underline;
+    font-size: large;
+}
+
+.my-header {
+    text-align: center;
+    font-family: "IBM Plex Serif Medium", Arial, sans-serif;
+    text-decoration: underline;
+}
+
+.img-table-div {
+    display: inline-block;
+    width: 100%;
+}
+
+.my-img {
+    box-shadow: 5px 5px 5px #696969;
+    border: 1px solid #BFBFBF;
+    width: 70%;
+    margin-left: 0.3%;
+}
+
+.my-table {
+    box-shadow: 5px 5px 5px #696969;
+    float: right;
+    width: 28.5%;
+    border: 2px solid #343434;
+    margin-right: 0.5%;
+    margin-left: 0.5%;
+}

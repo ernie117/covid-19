@@ -2,6 +2,6 @@
 /.idea
 __pycache__/
 webapp/config/
-webapp/static/
+webapp/static/images
 gitignore
 *.txt
