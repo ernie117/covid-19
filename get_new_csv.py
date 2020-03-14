@@ -53,7 +53,10 @@ def write_new_csv(data):
         return
 
     for key, value in data.items():
-        with open("COVID-19-data/" + key, "w") as file_obj:
+        with open("COVID-19-data/" + key,
+                  "w",
+                  encoding="utf-8",
+                  newline="") as file_obj:
             reader = csv.reader(value.splitlines())
             writer = csv.writer(file_obj)
             writer.writerows(reader)
