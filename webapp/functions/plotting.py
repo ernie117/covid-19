@@ -24,13 +24,15 @@ def build_line_plot(dataframe: DataFrame,
     :param dataframe: pandas DataFrame of dates and cases
     """
     plt.figure(figsize=(15, 9))
-    for case in ("confirmed", "recovered", "deaths"):
-        print(case)
+    for case, colour in (("confirmed", "blue"),
+                         ("recovered", "green"),
+                         ("deaths", "orange")):
         ax = sns.lineplot(x="dates",
                           y=case,
                           marker="o",
                           markersize=5,
                           label=case.title(),
+                          color=colour,
                           data=dataframe)
 
     font = {
@@ -40,12 +42,12 @@ def build_line_plot(dataframe: DataFrame,
         "size": 14,
     }
 
-    ax.set_facecolor("#c5c8ff")
+    ax.set_facecolor("#6696AE")
     ax.grid(color="black", linewidth=0.3)
-    ax.set_xlabel("Dates", fontdict=font, labelpad=20)
-    ax.set_ylabel("COVID-19 Cases", fontdict=font, labelpad=20)
+    ax.set_xlabel("Dates", fontdict=font, labelpad=10)
+    ax.set_ylabel("COVID-19 Cases", fontdict=font, labelpad=10)
     plt.xticks(dataframe["dates"], dates, fontsize=10, rotation=70)
     plt.yticks(fontsize=12)
     plt.legend(prop=FontProperties(family="IBM Plex Mono", size=12))
-    plt.tight_layout()
+    plt.tight_layout(pad=0.3)
     plt.savefig(f"{img_dir}\\{country.lower()}.png")
