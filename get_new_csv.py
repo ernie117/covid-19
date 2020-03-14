@@ -1,5 +1,6 @@
 import csv
 import re
+from typing import Dict
 
 import requests
 import yaml
@@ -11,13 +12,25 @@ with open("config/config.yml", "r") as f_obj:
 RAW_DATA_ROOT_URL = CONFIG["URLs"]["githubRawRootURL"]
 
 
-def request_html_content():
+def request_html_content() -> BeautifulSoup:
+    """
+    Simply requests the webpage content from the daily reports
+    data page of Johns Hopkins COVID-19 repo.
+
+    :return: BeautifulSoup object of html
+    """
     html_resp = requests.get(CONFIG["URLs"]["githubCovid19RepoURL"]).content
 
     return BeautifulSoup(html_resp, "lxml")
 
 
-def get_csv_a_tags(html):
+def get_csv_a_tags(html: BeautifulSoup) -> Dict:
+    """
+    Interrogates the requested HTML for hrefs leading to COVID-19
+    csv data files and their filenames (dates).
+
+    :return: Dict of URLs for csv data and filenames
+    """
     a_tags = html.find_all(href=re.compile(r"\.csv"))
     urls_and_filenames_dict = {"urls": [], "filenames": []}
 
@@ -29,7 +42,13 @@ def get_csv_a_tags(html):
     return urls_and_filenames_dict
 
 
-def get_new_csv(dictionary):
+def get_new_csv(dictionary: Dict) -> Dict:
+    """
+    Checks our list of csv files against those available in
+    the COVID-19 repo and identify any new ones to download.
+
+    :return: Dict of new csv filename as key with data as value
+    """
     with open("COVID-19-data/current_filenames.txt", "r") as file_obj:
         current_filenames = file_obj.read().splitlines()
 
@@ -48,7 +67,11 @@ def get_new_csv(dictionary):
     return new_csv_data
 
 
-def write_new_csv(data):
+def write_new_csv(data: Dict) -> None:
+    """
+    If we have new csv data, write it to a csv file.
+
+    """
     if not data:
         return
 

@@ -87,5 +87,6 @@ def build_line_plot(dates: list, dataframe: DataFrame) -> None:
     plt.figure(figsize=(15, 8))
     sns.lineplot(data=dataframe, x="dates", y="cases", marker="o")
     plt.xticks(dataframe["dates"], dates, fontsize=10, rotation=70)
+    plt.yticks(fontsize=14)
 
     plt.show()
