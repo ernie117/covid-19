@@ -55,6 +55,7 @@ def extract_confirmed_cases_deaths_recovered(data: Dict[any, List[str]],
             # Due to inconsistencies in the CSV data UK is sometimes 'UK'
             # and sometimes 'United Kingdom' :/
             try:
+                print(sorted_data[key])
                 if ((country == "uk" or country == "united kingdom")
                         and (element["Country/Region"] == "United Kingdom"
                              or
@@ -137,7 +138,6 @@ def build_line_plot(dataframe: DataFrame, country: str) -> None:
     ax.set_title("COVID-19 cases by Date for " + country)
     ax.set_xlabel("Dates", fontsize=14, labelpad=10)
     ax.set_ylabel("COVID-19 Cases", fontsize=14, labelpad=10)
-    ax.get_yaxis().get_major_formatter().set_scientific(False)
 
     plt.xticks(dataframe["dates"], get_dates(), fontsize=10, rotation=70)
     plt.yticks(fontsize=12)
