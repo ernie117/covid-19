@@ -25,7 +25,7 @@ def read_csv_files_to_dict() -> Dict[str, List[str]]:
         filename: os.DirEntry
         for filename in iterator:
             if filename.name.endswith("csv"):
-                with open(filename, "r", encoding="utf-8-sig") as f_obj:
+                with open(filename, "r", encoding="utf-8") as f_obj:
                     reader = csv.DictReader(f_obj)
                     csv_dicts_list[filename.name.split(".")[0]] = list(reader)
 
@@ -55,7 +55,6 @@ def extract_confirmed_cases_deaths_recovered(data: Dict[any, List[str]],
             # Due to inconsistencies in the CSV data UK is sometimes 'UK'
             # and sometimes 'United Kingdom' :/
             try:
-                print(sorted_data[key])
                 if ((country == "uk" or country == "united kingdom")
                         and (element["Country/Region"] == "United Kingdom"
                              or
