@@ -8,9 +8,8 @@ from pandas import DataFrame
 from webapp.functions.plotting import build_line_plot, set_seaborn_features
 
 
-def get_dates(data_dir: str) -> list:
-    return sorted([f.name.split(".")[0] for f in os.scandir(data_dir)
-                   if f.name.endswith("csv")])
+def get_dates(dataframe: DataFrame) -> list:
+    return dataframe.dates.dt.strftime('%Y-%m-%d')
 
 
 def read_csv_files_to_dict(data_dir: str) -> Dict[str, List[str]]:
@@ -76,10 +75,14 @@ def extract_confirmed_cases_deaths_recovered(data: Dict[any, List[str]],
         recovered = 0
         deaths = 0
 
-    # Dates with no cases for the country get set to 0
-    for key, value in new_data.items():
-        if not value:
-            new_data[key] = 0
+    # Dates with no cases get deleted
+    dates_to_remove = []
+    for date, data in new_data.items():
+        if not any(data):
+            dates_to_remove.append(date)
+
+    for date in dates_to_remove:
+        new_data.pop(date, None)
 
     return new_data
 
@@ -119,6 +122,7 @@ def data_to_dataframe(cases: Dict[str, list]) -> DataFrame:
 def main(country: str, data_dir: str, img_dir: str):
     data = read_csv_files_to_dict(data_dir)
     cases = extract_confirmed_cases_deaths_recovered(data, country)
-    dates = get_dates(data_dir)
+    dataframe = data_to_dataframe(cases)
+    dates = get_dates(dataframe)
     set_seaborn_features()
-    build_line_plot(data_to_dataframe(cases), country.title(), dates, img_dir)
+    build_line_plot(dataframe, country.title(), dates, img_dir)
