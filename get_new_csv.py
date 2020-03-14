@@ -88,10 +88,8 @@ def write_new_csv(data: Dict) -> None:
             file_obj.write(key)
 
 
-write_new_csv(
-    get_new_csv(
-        get_csv_a_tags(
-            request_html_content()
-        )
-    )
-)
+def main():
+    html = request_html_content()
+    tag_dict = get_csv_a_tags(html)
+    new_data = get_new_csv(tag_dict)
+    write_new_csv(new_data)

@@ -85,7 +85,13 @@ def build_line_plot(dates: list, dataframe: DataFrame) -> None:
     sns.set_style("darkgrid")
 
     plt.figure(figsize=(15, 8))
-    sns.lineplot(data=dataframe, x="dates", y="cases", marker="o")
+    ax = sns.lineplot(data=dataframe,
+                      x="dates",
+                      y="cases",
+                      marker="o")
+    ax.set_xlabel("Dates", fontsize=14, labelpad=10)
+    ax.set_ylabel("Confirmed Cases", fontsize=14, labelpad=10)
+
     plt.xticks(dataframe["dates"], dates, fontsize=10, rotation=70)
     plt.yticks(fontsize=14)
 
