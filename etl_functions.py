@@ -1,11 +1,16 @@
 import csv
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import matplotlib.pyplot as plt
 import pandas
 import seaborn as sns
 from pandas import DataFrame
+
+
+def get_dates() -> list:
+    return sorted([f.name.split(".")[0] for f in os.scandir("COVID-19-data")
+                   if f.name.endswith("csv")])
 
 
 def read_csv_files_to_dict() -> Dict[str, List[str]]:
@@ -28,7 +33,7 @@ def read_csv_files_to_dict() -> Dict[str, List[str]]:
 
 
 def extract_confirmed_cases_deaths_recovered(data: Dict[any, List[str]],
-                                             country: str) -> Dict[str, int]:
+                                             country: str) -> Dict[str, list]:
     """
     Creates a new dict wherein keys are sorted (ascending) dates
     and values are the confirmed, recovered and death cases for
@@ -79,7 +84,7 @@ def extract_confirmed_cases_deaths_recovered(data: Dict[any, List[str]],
     return new_data
 
 
-def data_to_dataframe(cases: Dict[str, list]) -> Tuple[list, DataFrame]:
+def data_to_dataframe(cases: Dict[str, list]) -> DataFrame:
     """
     Takes dict of dates and confirmed covid-19 cases and
     re-organises it into a dictionary of lists suitable for
@@ -88,9 +93,6 @@ def data_to_dataframe(cases: Dict[str, list]) -> Tuple[list, DataFrame]:
     :param cases: Dict of dates and cases
     :return: a list of dates and a pandas DataFrame
     """
-    dates = sorted([f.name.split(".")[0] for f in os.scandir("COVID-19-data")
-                    if f.name.endswith("csv")])
-
     confirmed = [element[0] for element in list(cases.values())]
     recovered = [element[1] for element in list(cases.values())]
     deaths = [element[2] for element in list(cases.values())]
@@ -100,24 +102,22 @@ def data_to_dataframe(cases: Dict[str, list]) -> Tuple[list, DataFrame]:
                       "deaths": deaths}
     dataframe = DataFrame(data=dataframe_dict)
     dataframe["dates"] = pandas.to_datetime(dataframe["dates"])
-    sum_row = dataframe.sum(axis=1)
-    dataframe["count"] = sum_row
 
-    return dates, dataframe
+    return dataframe
 
 
-def build_line_plot(dates: list, dataframe: DataFrame) -> None:
+def build_line_plot(dataframe: DataFrame, country: str) -> None:
     """
     Creates and renders a Seaborn lineplot.
 
-    :param dates: sorted list of dates for x labels
+    :param country: Country for which we are plotting data
     :param dataframe: pandas DataFrame of dates and cases
     """
     sns.set_style("whitegrid")
     sns.set_context("talk")
     sns.set_palette("colorblind")
 
-    plt.figure(figsize=(15, 8))
+    plt.figure(figsize=(15, 9))
     ax = sns.lineplot(x="dates",
                       y="confirmed",
                       marker="o",
@@ -134,13 +134,20 @@ def build_line_plot(dates: list, dataframe: DataFrame) -> None:
                  label="Recovered",
                  data=dataframe)
 
+    ax.set_title("COVID-19 cases by Date for " + country)
     ax.set_xlabel("Dates", fontsize=14, labelpad=10)
     ax.set_ylabel("COVID-19 Cases", fontsize=14, labelpad=10)
     ax.get_yaxis().get_major_formatter().set_scientific(False)
 
-    plt.xticks(dataframe["dates"], dates, fontsize=10, rotation=70)
+    plt.xticks(dataframe["dates"], get_dates(), fontsize=10, rotation=70)
     plt.yticks(fontsize=12)
 
     plt.setp(ax.get_legend().get_texts(), fontsize=14)
 
     plt.show()
+
+
+def main(country: str):
+    data = read_csv_files_to_dict()
+    cases = extract_confirmed_cases_deaths_recovered(data, country)
+    build_line_plot(data_to_dataframe(cases), country.title())
