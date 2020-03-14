@@ -25,22 +25,33 @@ th {
 }
 
 .img-table-div {
-    display: inline-block;
     width: 100%;
+}
+
+.img-div {
+    width: 70%;
+    float: left;
 }
 
 .my-img {
     box-shadow: 5px 5px 5px #696969;
     border: 1px solid #BFBFBF;
-    width: 70%;
-    margin-left: 0.3%;
+    width: 100%;
+    margin-left: 1%;
 }
 
 .my-table {
     box-shadow: 5px 5px 5px #696969;
     float: right;
-    width: 28.5%;
-    border: 2px solid #343434;
-    margin-right: 0.5%;
-    margin-left: 0.5%;
+    width: 100%;
+    /*border: 2px solid #343434;*/
+}
+
+.wrap {
+    table-layout: fixed;
+}
+
+.inner-table {
+    height: 800px;
+    overflow-y: auto;
 }

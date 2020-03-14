@@ -9,68 +9,24 @@
 <div>
     <h1 class="my-header">Data for {{country.title()}}</h1>
     <div class="img-table-div">
-        <img class="my-img" alt="" src="..\\static\\images\\{{country}}.png"/>
-        <table class="my-table">
-            <tr>
-                <th>Countries</th>
-            </tr>
-            <tr>
-                <td>
-                    <a href="/uk">
-                        UK
-                    </a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="/us">
-                        US
-                    </a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="/china">
-                        China
-                    </a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="/italy">
-                        Italy
-                    </a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="/germany">
-                        Germany
-                    </a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="/france">
-                        France
-                    </a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="/spain">
-                        Spain
-                    </a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="/portugal">
-                        Portugal
-                    </a>
-                </td>
-            </tr>
-        </table>
+        <div class="img-div">
+            <img class="my-img" alt="" src="..\static\images\{{country}}.png"/>
+        </div>
+        <div class="wrap">
+            <div class="inner-table">
+                <table class="my-table">
+                    {% for country in countries %}
+                    <tr>
+                        <td>
+                            <a href="/{{country}}">
+                                {{country.title()}}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 </body>

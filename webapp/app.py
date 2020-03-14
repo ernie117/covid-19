@@ -1,3 +1,4 @@
+import csv
 import os
 
 import yaml
@@ -20,7 +21,9 @@ def home(country: str):
                            CONFIG["directories"]["covid19Directory"],
                            CONFIG["directories"]["plotImgDirectory"])
 
-    return render_template("index.html", country=country)
+    return render_template("index.html",
+                           country=country,
+                           countries=get_countries())
 
 
 def check_for_existing_file(country: str):
@@ -30,6 +33,21 @@ def check_for_existing_file(country: str):
                 return filename.name
 
     return None
+
+
+def get_countries():
+    countries = []
+    filter_countries = ("Gibraltar", "Channel Islands")
+    with os.scandir("COVID-19-data") as iterator:
+        for filename in iterator:
+            if filename.name.endswith("csv"):
+                with open("COVID-19-data/" + filename.name, "r") as f:
+                    data = csv.DictReader(f)
+                    for thing in data:
+                        countries.append(thing["Country/Region"])
+
+    return sorted([country for country in set(countries)
+                   if country not in filter_countries])
 
 
 if __name__ == "__main__":
