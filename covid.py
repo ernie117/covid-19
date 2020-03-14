@@ -1,6 +1,5 @@
 # main stuff
-import etl_functions
-import get_new_csv
+from functions import etl_functions
 
 # get_new_csv.main()
-etl_functions.main("uk")
+etl_functions.main("japan")

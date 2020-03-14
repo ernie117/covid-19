@@ -8,19 +8,19 @@ import seaborn as sns
 from pandas import DataFrame
 
 
-def get_dates() -> list:
-    return sorted([f.name.split(".")[0] for f in os.scandir("COVID-19-data")
+def get_dates(data_dir: str) -> list:
+    return sorted([f.name.split(".")[0] for f in os.scandir(data_dir)
                    if f.name.endswith("csv")])
 
 
-def read_csv_files_to_dict() -> Dict[str, List[str]]:
+def read_csv_files_to_dict(data_dir: str) -> Dict[str, List[str]]:
     """
     Creates a dictionary wherein keys are dates corresponding
     to CSV file names, and values are the data in those CSVs.
 
     :return: Dictionary of dates and raw csv data
     """
-    with os.scandir("COVID-19-data") as iterator:
+    with os.scandir(data_dir) as iterator:
         csv_dicts_list: Dict[str, List[str]] = {}
         filename: os.DirEntry
         for filename in iterator:
@@ -106,10 +106,14 @@ def data_to_dataframe(cases: Dict[str, list]) -> DataFrame:
     return dataframe
 
 
-def build_line_plot(dataframe: DataFrame, country: str) -> None:
+def build_line_plot(dataframe: DataFrame,
+                    country: str,
+                    dates: list,
+                    img_dir: str) -> None:
     """
     Creates and renders a Seaborn lineplot.
 
+    :param dates: List of dates of available data
     :param country: Country for which we are plotting data
     :param dataframe: pandas DataFrame of dates and cases
     """
@@ -138,15 +142,16 @@ def build_line_plot(dataframe: DataFrame, country: str) -> None:
     ax.set_xlabel("Dates", fontsize=14, labelpad=10)
     ax.set_ylabel("COVID-19 Cases", fontsize=14, labelpad=10)
 
-    plt.xticks(dataframe["dates"], get_dates(), fontsize=10, rotation=70)
+    plt.xticks(dataframe["dates"], dates, fontsize=10, rotation=70)
     plt.yticks(fontsize=12)
 
     plt.setp(ax.get_legend().get_texts(), fontsize=14)
 
-    plt.show()
+    plt.savefig(f"{img_dir}\\{country.lower()}.png")
 
 
-def main(country: str):
-    data = read_csv_files_to_dict()
+def main(country: str, data_dir: str, img_dir: str):
+    data = read_csv_files_to_dict(data_dir)
     cases = extract_confirmed_cases_deaths_recovered(data, country)
-    build_line_plot(data_to_dataframe(cases), country.title())
+    dates = get_dates(data_dir)
+    build_line_plot(data_to_dataframe(cases), country.title(), dates, img_dir)
