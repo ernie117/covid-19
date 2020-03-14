@@ -113,6 +113,7 @@ def build_line_plot(dataframe: DataFrame,
     """
     Creates and renders a Seaborn lineplot.
 
+    :param img_dir: Directory for image storing
     :param dates: List of dates of available data
     :param country: Country for which we are plotting data
     :param dataframe: pandas DataFrame of dates and cases
