@@ -37,17 +37,16 @@ def extract_confirmed_cases(data: Dict[any, List[str]]) -> Dict[str, int]:
     sorted_data = dict(sorted(data.items()))
     new_data = dict.fromkeys(sorted_data.keys())
 
+    confirmed_cases = 0
     for key, value in sorted_data.items():
         for element in value:
-            # We don't want Gibraltar or Channel Island cases.
-            # TODO find a nicer way of doing this.
-            # Eventually filter by country, not just UK.
             if (element["Country/Region"] == "United Kingdom"
-                or
-                element["Country/Region"] == "UK") and (
-                    element["Province/State"] != "Gibraltar"
-                    and element["Province/State"] != "Channel Islands"):
-                new_data[key] = int(element["Confirmed"])
+                    or
+                    element["Country/Region"] == "UK"):
+                confirmed_cases += int(element["Confirmed"])
+
+        new_data[key] = confirmed_cases
+        confirmed_cases = 0
 
     # Dates with no cases for the country get set to 0
     for key, value in new_data.items():
