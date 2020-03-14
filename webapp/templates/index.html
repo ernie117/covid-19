@@ -2,9 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>COVID-19 ETL and Plotting</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body>
-
+<div>
+    <h1 class="my-header">Data for {{country.title()}}</h1>
+    <div>
+        <img class="my-img" alt="" src="..\\static\\images\\{{country}}.png"/>
+    </div>
+</div>
 </body>
 </html>

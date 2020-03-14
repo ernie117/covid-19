@@ -2,10 +2,10 @@ import csv
 import os
 from typing import Dict, List
 
-import matplotlib.pyplot as plt
 import pandas
-import seaborn as sns
 from pandas import DataFrame
+
+from webapp.functions.plotting import build_line_plot, set_seaborn_features
 
 
 def get_dates(data_dir: str) -> list:
@@ -93,66 +93,32 @@ def data_to_dataframe(cases: Dict[str, list]) -> DataFrame:
     :param cases: Dict of dates and cases
     :return: a list of dates and a pandas DataFrame
     """
-    confirmed = [element[0] for element in list(cases.values())]
-    recovered = [element[1] for element in list(cases.values())]
-    deaths = [element[2] for element in list(cases.values())]
-    dataframe_dict = {"dates": list(cases.keys()),
-                      "confirmed": confirmed,
-                      "recovered": recovered,
-                      "deaths": deaths}
+    cases_values = list(cases.values())
+
+    confirmed = []
+    recovered = []
+    deaths = []
+    for element in cases_values:
+        confirmed.append(element[0])
+        recovered.append(element[1])
+        deaths.append(element[2])
+
+    dataframe_dict = {
+        "dates": list(cases.keys()),
+        "confirmed": confirmed,
+        "recovered": recovered,
+        "deaths": deaths
+    }
+
     dataframe = DataFrame(data=dataframe_dict)
     dataframe["dates"] = pandas.to_datetime(dataframe["dates"])
 
     return dataframe
 
 
-def build_line_plot(dataframe: DataFrame,
-                    country: str,
-                    dates: list,
-                    img_dir: str) -> None:
-    """
-    Creates and renders a Seaborn lineplot.
-
-    :param img_dir: Directory for image storing
-    :param dates: List of dates of available data
-    :param country: Country for which we are plotting data
-    :param dataframe: pandas DataFrame of dates and cases
-    """
-    sns.set_style("whitegrid")
-    sns.set_context("talk")
-    sns.set_palette("colorblind")
-
-    plt.figure(figsize=(15, 9))
-    ax = sns.lineplot(x="dates",
-                      y="confirmed",
-                      marker="o",
-                      label="Confirmed",
-                      data=dataframe)
-    sns.lineplot(x="dates",
-                 y="deaths",
-                 marker="o",
-                 label="Deaths",
-                 data=dataframe)
-    sns.lineplot(x="dates",
-                 y="recovered",
-                 marker="o",
-                 label="Recovered",
-                 data=dataframe)
-
-    ax.set_title("COVID-19 cases by Date for " + country)
-    ax.set_xlabel("Dates", fontsize=14, labelpad=10)
-    ax.set_ylabel("COVID-19 Cases", fontsize=14, labelpad=10)
-
-    plt.xticks(dataframe["dates"], dates, fontsize=10, rotation=70)
-    plt.yticks(fontsize=12)
-
-    plt.setp(ax.get_legend().get_texts(), fontsize=14)
-
-    plt.savefig(f"{img_dir}\\{country.lower()}.png")
-
-
 def main(country: str, data_dir: str, img_dir: str):
     data = read_csv_files_to_dict(data_dir)
     cases = extract_confirmed_cases_deaths_recovered(data, country)
     dates = get_dates(data_dir)
+    set_seaborn_features()
     build_line_plot(data_to_dataframe(cases), country.title(), dates, img_dir)

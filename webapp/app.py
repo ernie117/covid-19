@@ -1,7 +1,7 @@
 import os
 
 import yaml
-from flask import Flask, send_from_directory
+from flask import Flask, render_template
 
 from webapp.functions import etl_functions
 
@@ -20,7 +20,7 @@ def home(country: str):
                            CONFIG["directories"]["covid19Directory"],
                            CONFIG["directories"]["plotImgDirectory"])
 
-    return send_from_directory("static\\images\\", f"{country}.png")
+    return render_template("index.html", country=country)
 
 
 def check_for_existing_file(country: str):
