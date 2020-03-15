@@ -76,7 +76,7 @@ def write_new_csv(data: Dict) -> None:
         return
 
     for key, value in data.items():
-        with open("COVID-19-data/" + key,
+        with open("../COVID-19-data/" + key,
                   "w",
                   encoding="utf-8",
                   newline="") as file_obj:
@@ -85,7 +85,7 @@ def write_new_csv(data: Dict) -> None:
             writer.writerows(reader)
 
         with open("../COVID-19-data/current_filenames.txt", "a") as file_obj:
-            file_obj.write(key)
+            file_obj.write(key + "\n")
 
 
 def main():
@@ -93,3 +93,6 @@ def main():
     tag_dict = get_csv_a_tags(html)
     new_data = get_new_csv(tag_dict)
     write_new_csv(new_data)
+
+
+main()
