@@ -6,7 +6,7 @@ import requests
 import yaml
 from bs4 import BeautifulSoup
 
-with open("../config/config.yml", "r") as f_obj:
+with open("config/config.yml", "r") as f_obj:
     CONFIG = yaml.load(f_obj, Loader=yaml.FullLoader)
 
 RAW_DATA_ROOT_URL = CONFIG["URLs"]["githubRawRootURL"]
@@ -49,7 +49,7 @@ def get_new_csv(dictionary: Dict) -> Dict:
 
     :return: Dict of new csv filename as key with data as value
     """
-    with open("../COVID-19-data/current_filenames.txt", "r") as file_obj:
+    with open("webapp/COVID-19-data/current_filenames.txt", "r") as file_obj:
         current_filenames = file_obj.read().splitlines()
 
     new_csv_data = {}
@@ -76,15 +76,14 @@ def write_new_csv(data: Dict) -> None:
         return
 
     for key, value in data.items():
-        with open("../COVID-19-data/" + key,
-                  "w",
+        with open("webapp/COVID-19-data/" + key, "w",
                   encoding="utf-8",
                   newline="") as file_obj:
             reader = csv.reader(value.splitlines())
             writer = csv.writer(file_obj)
             writer.writerows(reader)
 
-        with open("../COVID-19-data/current_filenames.txt", "a") as file_obj:
+        with open("webapp/COVID-19-data/current_filenames.txt", "a") as file_obj:
             file_obj.write(key + "\n")
 
 

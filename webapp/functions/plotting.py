@@ -50,5 +50,6 @@ def build_line_plot(dataframe: DataFrame,
     plt.yticks(fontsize=12)
     plt.legend(prop=FontProperties(family="IBM Plex Mono", size=12))
     plt.tight_layout(pad=0.3)
-    plt.savefig(f"{img_dir}\\{country.lower()}.png")
+    print(f"{img_dir}/{country.lower()}.png")
+    plt.savefig(f"{img_dir}/{country.lower()}.png")
     plt.close()
