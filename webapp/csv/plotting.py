@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.font_manager import FontProperties
@@ -36,7 +38,7 @@ def build_line_plot(dataframe: DataFrame,
                           data=dataframe)
 
     font = {
-        "family": "IBM Plex Mono",
+        "family": "IBM Plex Mono Medium",
         "color": "black",
         "weight": "normal",
         "size": 14,
@@ -48,8 +50,8 @@ def build_line_plot(dataframe: DataFrame,
     ax.set_ylabel("COVID-19 Cases", fontdict=font, labelpad=10)
     plt.xticks(dataframe["dates"], dates, fontsize=10, rotation=70)
     plt.yticks(fontsize=12)
-    plt.legend(prop=FontProperties(family="IBM Plex Mono", size=12))
+    plt.legend(prop=FontProperties(family="IBM Plex Mono Medium", size=12))
     plt.tight_layout(pad=0.3)
     print(f"{img_dir}/{country.lower()}.png")
-    plt.savefig(f"{img_dir}/{country.lower()}.png")
+    plt.savefig(Path(f"{img_dir}/{country.lower()}.png"))
     plt.close()

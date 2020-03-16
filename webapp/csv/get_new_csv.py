@@ -94,4 +94,3 @@ def main():
     write_new_csv(new_data)
 
 
-main()
