@@ -1,13 +1,15 @@
 import csv
 import itertools
 import os
+import sys
+import time
 from typing import Dict, List
 
 import numpy
 import pandas
 from pandas import DataFrame
 
-from webapp.functions.plotting import build_line_plot, set_seaborn_features
+from webapp.csv.plotting import build_line_plot, set_seaborn_features
 
 
 def get_dates(dataframe: DataFrame) -> list:
@@ -31,7 +33,7 @@ def read_csv_files_to_dict(data_dir: str, country: str):
     for filename in filenames:
         if filename.name.endswith("csv"):
             with open(filename, "r", encoding="utf-8") as f_obj:
-                reader = csv.DictReader(f_obj)
+                reader = list(csv.DictReader(f_obj))
                 date = filename.name.split(".")[0]
                 cases_dict = extract_confirmed_deaths_recovered(reader,
                                                                 country,
@@ -41,19 +43,20 @@ def read_csv_files_to_dict(data_dir: str, country: str):
     return cases_dict
 
 
-def extract_confirmed_deaths_recovered(reader: csv.DictReader, country: str,
+def extract_confirmed_deaths_recovered(reader: list, country: str,
                                        date: str, cases_dict: Dict):
     """
     Creates a new dict wherein keys are sorted (ascending) dates
     and values are the confirmed, recovered and death cases for
     the country supplied.
 
+    :param cases_dict:
     :param reader:
     :param country:
     :param date:
     :return:
     """
-    list_of_country_dicts = [d for d in list(reader)
+    list_of_country_dicts = [d for d in reader
                              if country in d["Country/Region"].lower()]
 
     confirmed = 0
@@ -71,11 +74,15 @@ def extract_confirmed_deaths_recovered(reader: csv.DictReader, country: str,
         if deaths_str:
             deaths += int(deaths_str)
 
+    # Don't want rows with no values
+    if confirmed == 0 and recovered == 0 and deaths == 0:
+        return cases_dict
+
     cases_dict["confirmed"].append(confirmed)
     cases_dict["recovered"].append(recovered)
     cases_dict["deaths"].append(deaths)
-
     cases_dict["dates"].append(date)
+
     return cases_dict
 
 
@@ -88,21 +95,9 @@ def data_to_dataframe(cases):
     :param cases: Dict of dates and cases
     :return: a list of dates and a pandas DataFrame
     """
-    print(len(cases["dates"]))
-    print(len(cases["confirmed"]))
-    print(len(cases["recovered"]))
-    print(len(cases["deaths"]))
     dataframe = DataFrame(data=cases)
     dataframe.replace("", 0)
     dataframe["dates"] = pandas.to_datetime(dataframe["dates"])
-    dataframe["confirmed"] = pandas.to_numeric(dataframe["confirmed"])
-    dataframe["recovered"] = pandas.to_numeric(dataframe["recovered"])
-    dataframe["deaths"] = pandas.to_numeric(dataframe["deaths"])
-    dataframe.fillna(0, inplace=True)
-    dataframe["confirmed"] = dataframe["confirmed"].astype(int)
-    dataframe["recovered"] = dataframe["recovered"].astype(int)
-    dataframe["deaths"] = dataframe["deaths"].astype(int)
-    print(dataframe)
 
     return dataframe
 
