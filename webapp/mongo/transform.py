@@ -44,11 +44,12 @@ def create_custom_dicts(dictreader: DictReader, date: str):
     return new_dicts
 
 
-def reduce_dicts(list_of_custom_dicts):
+def reduce_dicts(list_of_custom_dicts, date):
     """
     Sum all cases for each occurrence of a country by date, build new
     dict of results.
     
+    :param date:
     :param list_of_custom_dicts: Custom dicts created previously
     :return: list of dicts with case totals for country by date
     """
@@ -60,7 +61,8 @@ def reduce_dicts(list_of_custom_dicts):
 
     # Sum the confirmed, recovered and deaths for each region of a country
     # to have a total for each case for each country
-    country_dicts = []
+    country_dictionaries = []
+    building_dictionary = {}
     for country in countries:
         for dictionary in list_of_custom_dicts:
             if dictionary[COUNTRY_REGION_LC].lower() == country.lower():
@@ -70,19 +72,24 @@ def reduce_dicts(list_of_custom_dicts):
                 deaths += int(dictionary["deaths"])
             else:
                 continue
-
-        country_dicts.append({
-            "date": list_of_custom_dicts[0]["date"],
-            COUNTRY_REGION_LC: country,
+        country_dictionary = {
+            "country/region": country,
             "confirmed": confirmed,
             "recovered": recovered,
             "deaths": deaths
-        })
+        }
+        country_dictionaries.append(country_dictionary)
+
+        building_dictionary = {
+            "date": date,
+            "countries": country_dictionaries,
+        }
+
         confirmed = 0
         recovered = 0
         deaths = 0
 
-    return country_dicts
+    return building_dictionary
 
 
 def replace_empty_values(dictionary):
@@ -95,16 +102,13 @@ def replace_empty_values(dictionary):
 
 def main():
     data_list, dates = request_csv.main()
-    objects_to_save = []
+    reduced_dicts = []
     for datum, date in zip(data_list, dates):
         dicts = create_custom_dicts(datum, date)
-        reduced_dicts = reduce_dicts(dicts)
-        # Pass to service layer here
-        for thingy in reduced_dicts:
-            objects_to_save.append(thingy)
+        reduced_dicts.append(reduce_dicts(dicts, date))
 
-    for date in objects_to_save:
-        print(date)
+    with open("testingfile.json", "w") as f:
+        f.write(json.dumps(reduced_dicts, indent=2))
 
 
 main()
