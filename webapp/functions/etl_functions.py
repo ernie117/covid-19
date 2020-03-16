@@ -3,6 +3,7 @@ import itertools
 import os
 from typing import Dict, List
 
+import numpy
 import pandas
 from pandas import DataFrame
 
@@ -53,14 +54,28 @@ def extract_confirmed_deaths_recovered(reader: csv.DictReader, country: str,
     :return:
     """
     list_of_country_dicts = [d for d in list(reader)
-                             if d["Country/Region"].lower() == country]
+                             if country in d["Country/Region"].lower()]
 
+    confirmed = 0
+    recovered = 0
+    deaths = 0
+    # Sum values for multiple states/provinces within the same country
     for d in list_of_country_dicts:
-        cases_dict["dates"].append(date)
-        cases_dict["confirmed"].append(d["Confirmed"])
-        cases_dict["recovered"].append(d["Recovered"])
-        cases_dict["deaths"].append(d["Deaths"])
+        confirmed_str = d["Confirmed"]
+        recovered_str = d["Recovered"]
+        deaths_str = d["Deaths"]
+        if confirmed_str:
+            confirmed += int(confirmed_str)
+        if recovered_str:
+            recovered += int(recovered_str)
+        if deaths_str:
+            deaths += int(deaths_str)
 
+    cases_dict["confirmed"].append(confirmed)
+    cases_dict["recovered"].append(recovered)
+    cases_dict["deaths"].append(deaths)
+
+    cases_dict["dates"].append(date)
     return cases_dict
 
 
@@ -73,12 +88,21 @@ def data_to_dataframe(cases):
     :param cases: Dict of dates and cases
     :return: a list of dates and a pandas DataFrame
     """
+    print(len(cases["dates"]))
+    print(len(cases["confirmed"]))
+    print(len(cases["recovered"]))
+    print(len(cases["deaths"]))
     dataframe = DataFrame(data=cases)
     dataframe.replace("", 0)
     dataframe["dates"] = pandas.to_datetime(dataframe["dates"])
     dataframe["confirmed"] = pandas.to_numeric(dataframe["confirmed"])
     dataframe["recovered"] = pandas.to_numeric(dataframe["recovered"])
     dataframe["deaths"] = pandas.to_numeric(dataframe["deaths"])
+    dataframe.fillna(0, inplace=True)
+    dataframe["confirmed"] = dataframe["confirmed"].astype(int)
+    dataframe["recovered"] = dataframe["recovered"].astype(int)
+    dataframe["deaths"] = dataframe["deaths"].astype(int)
+    print(dataframe)
 
     return dataframe
 

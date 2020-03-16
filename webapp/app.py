@@ -14,6 +14,7 @@ with open("config/config.yml", "r") as f:
 
 @app.route("/<country>")
 def home(country: str):
+    purge_images()
     country = country.lower()
 
     if not check_for_existing_file(country):
@@ -48,6 +49,13 @@ def get_countries():
 
     return sorted([country for country in set(countries)
                    if country not in filter_countries])
+
+
+def purge_images():
+    with os.scandir("webapp/static/images") as iterator:
+        for filename in iterator:
+            if filename.name.endswith("png"):
+                os.remove(filename)
 
 
 if __name__ == "__main__":
