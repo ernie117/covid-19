@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 import yaml
 from flask import Flask, render_template
 
@@ -18,8 +21,8 @@ def home(country: str):
 
     if not check_for_existing_file(country):
         etl_functions.main(country,
-                           CONFIG["directories"]["covid19Directory"],
-                           CONFIG["directories"]["plotImgDirectory"])
+                           Path("webapp/COVID-19-data"),
+                           Path("webapp/static/images"))
 
     return render_template("index.html",
                            country=country,

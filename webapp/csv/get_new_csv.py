@@ -82,6 +82,7 @@ def write_new_csv(data: Dict) -> None:
             reader = csv.reader(value.splitlines())
             writer = csv.writer(file_obj)
             writer.writerows(reader)
+            print(key + " file written!")
 
         with open("webapp/COVID-19-data/current_filenames.txt", "a") as file_obj:
             file_obj.write(key + "\n")
@@ -93,4 +94,7 @@ def main():
     new_data = get_new_csv(tag_dict)
     write_new_csv(new_data)
 
+
+if __name__ == "__main__":
+    main()
 

@@ -16,7 +16,7 @@ def create_custom_dicts(dictreader: DictReader, date: str):
     to each one. Also transform some country names as they are
     inconsistently-named in the source data.
 
-    :param dictreader: DictReader holding our source data
+    :param dictreader: DictReader holding our source csv data
     :param date: string representing date of case data
     :return:
     """
@@ -26,7 +26,8 @@ def create_custom_dicts(dictreader: DictReader, date: str):
 
         country = dictionary[COUNTRY_REGION]
         # There are more of these that need to be checked and changed.
-        # TODO move to own function
+        # TODO move to own function and look at data to see which
+        # TODO countries need to be checked and transformed
         if country.lower() == "mainland china":
             dictionary[COUNTRY_REGION] = "China"
         elif country.lower() == "uk":
@@ -46,9 +47,9 @@ def create_custom_dicts(dictreader: DictReader, date: str):
 
 def reduce_dicts(list_of_custom_dicts, date):
     """
-    Sum all cases for each occurrence of a country by date, build new
-    dict of results.
-    
+    Create a dict for each date with summed values for each country on
+    that date.
+
     :param date:
     :param list_of_custom_dicts: Custom dicts created previously
     :return: list of dicts with case totals for country by date
@@ -93,6 +94,12 @@ def reduce_dicts(list_of_custom_dicts, date):
 
 
 def replace_empty_values(dictionary):
+    """
+    Some values in the raw csv are blank, this replaces them with zeroes.
+
+    :param dictionary:
+    :return:
+    """
     for case in ("confirmed", "recovered", "deaths"):
         if not dictionary[case]:
             dictionary[case] = 0
@@ -101,13 +108,13 @@ def replace_empty_values(dictionary):
 
 
 def main():
-    data_list, dates = request_csv.main()
+    csv_list, dates = request_csv.main()
     reduced_dicts = []
-    for datum, date in zip(data_list, dates):
-        dicts = create_custom_dicts(datum, date)
+    for csv, date in zip(csv_list, dates):
+        dicts = create_custom_dicts(csv, date)
         reduced_dicts.append(reduce_dicts(dicts, date))
 
-    with open("testingfile.json", "w") as f:
+    with open("dates.json", "w") as f:
         f.write(json.dumps(reduced_dicts, indent=2))
 
 
