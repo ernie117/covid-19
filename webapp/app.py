@@ -10,7 +10,7 @@ from webapp.utils.utils import purge_images, check_for_existing_file, \
 
 app = Flask(__name__)
 
-with open("config/config.yml", "r") as f:
+with open(Path("config/config.yml"), "r") as f:
     CONFIG = yaml.load(f, Loader=yaml.FullLoader)
 
 

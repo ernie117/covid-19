@@ -61,7 +61,7 @@ def reduce_dicts(list_of_custom_dicts, date):
     countries = {d[COUNTRY_REGION_LC] for d in list_of_custom_dicts}
 
     # Sum the confirmed, recovered and deaths for each region of a country
-    # to have a total for each case for each country
+    # to have a total confirmed, recovered and deaths for each country
     country_dictionaries = []
     building_dictionary = {}
     for country in countries:
