@@ -1,6 +1,6 @@
 import csv
 import os
-from pathlib import Path
+from pathlib import Path, PurePath
 
 
 def check_for_existing_file(country: str):
@@ -14,7 +14,9 @@ def check_for_existing_file(country: str):
 
 def get_countries():
     countries = []
-    filter_countries = ("Gibraltar", "Channel Islands")
+    filter_countries = [
+        "Gibraltar", "Channel Islands", "Occupied Palestinian Territory"
+    ]
     with os.scandir(Path("webapp/COVID-19-data")) as iterator:
         for filename in iterator:
             if filename.name.endswith("csv"):
@@ -28,6 +30,7 @@ def get_countries():
 
 
 def purge_images():
+    print(os.getcwd())
     with os.scandir(Path("webapp/static/images")) as iterator:
         for filename in iterator:
             if filename.name.endswith("png"):

@@ -7,20 +7,35 @@ body {
 }
 
 td {
-    padding-left: 10px;
-    padding-bottom: 5px;
-    padding-top: 5px;
+    padding: 8px;
     text-align: center;
+    background-color: white;
+    border-bottom: 1px solid #ddd;
+    font-family: "IBM Plex Mono SemiBold", Arial, sans-serif;
+    margin: 5px;
+}
+
+input {
+    padding: 8px;
+    text-align: center;
+    background-color: white;
+    border-bottom: 1px solid #ddd;
+    font-family: "IBM Plex Mono SemiBold", Arial, sans-serif;
+    margin-top: 770px;
+    margin-left: 26px;
+    position: absolute;
+    width: 27%;
 }
 
 th {
     text-decoration: underline;
-    font-size: large;
+    font-size: medium;
+    padding: 10px;
 }
 
 .my-header {
     text-align: center;
-    font-family: "IBM Plex Serif Medium", Arial, sans-serif;
+    font-family: "IBM Plex Serif Bold", Arial, sans-serif;
     text-decoration: underline;
 }
 
@@ -41,10 +56,17 @@ th {
 }
 
 .my-table {
-    box-shadow: 5px 5px 5px #696969;
     float: right;
-    width: 100%;
-    /*border: 2px solid #343434;*/
+    width: 95%;
+    border-collapse: collapse;
+    font-family: "IBM Plex Mono SemiBold", Arial, sans-serif;
+}
+
+.my-table-header {
+    position: sticky;
+    top: 0;
+    background-color: #eeeeee;
+    height: 10px;
 }
 
 .wrap {
@@ -52,6 +74,8 @@ th {
 }
 
 .inner-table {
-    height: 800px;
+    margin-right: 10px;
+    height: 760px;
     overflow-y: auto;
+    box-shadow: 5px 5px 5px #696969;
 }

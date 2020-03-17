@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>COVID-19 ETL and Plotting</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
 </head>
 <body>
 <div>
@@ -12,22 +12,42 @@
         <div class="img-div">
             <img class="my-img" alt="" src="../static/images/{{country}}.png"/>
         </div>
-        <div class="wrap">
-            <div class="inner-table">
-                <table class="my-table">
-                    {% for country in countries %}
-                    <tr>
-                        <td>
-                            <a href="/{{country}}">
-                                {{country.title()}}
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </table>
+        <div class="inner-table">
+            <table class="my-table" id="my-table">
+                <thead class="my-table-header">
+                <tr>
+                    <th>Countries</th>
+                </tr>
+                </thead>
+                {% for country in countries %}
+                <tr>
+                    <td>
+                        <a href="/{{country}}">
+                            {{country.title()}}
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            <div>
+                <input type="text" id="myInput" onkeyup="filter_table()" placeholder="Filter countries..">
             </div>
         </div>
     </div>
 </div>
+<script>
+    function filter_table() {
+        const tableRows = document.getElementById("my-table").getElementsByTagName("td");
+        const searchText = document.getElementById("myInput").value;
+        let names = [];
+        Array.from(tableRows).forEach(row => {
+            if (!row.innerText.toLowerCase().includes(searchText.toLowerCase())) {
+                row.style.display = "none";
+            } else {
+                row.style.display = "";
+            }
+        });
+    }
+</script>
 </body>
 </html>
