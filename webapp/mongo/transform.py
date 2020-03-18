@@ -50,7 +50,7 @@ def reduce_dicts(list_of_custom_dicts, date):
     Create a dict for each date with summed values for each country on
     that date.
 
-    :param date:
+    :param date: String representing date
     :param list_of_custom_dicts: Custom dicts created previously
     :return: list of dicts with case totals for country by date
     """
@@ -62,8 +62,10 @@ def reduce_dicts(list_of_custom_dicts, date):
 
     # Sum the confirmed, recovered and deaths for each region of a country
     # to have a total confirmed, recovered and deaths for each country
-    country_dictionaries = []
-    building_dictionary = {}
+    building_dictionary = {
+        "date": date,
+        "countries": []
+    }
     for country in countries:
         for dictionary in list_of_custom_dicts:
             if dictionary[COUNTRY_REGION_LC].lower() == country.lower():
@@ -73,18 +75,13 @@ def reduce_dicts(list_of_custom_dicts, date):
                 deaths += int(dictionary["deaths"])
             else:
                 continue
-        country_dictionary = {
+
+        building_dictionary["countries"].append({
             "country/region": country,
             "confirmed": confirmed,
             "recovered": recovered,
             "deaths": deaths
-        }
-        country_dictionaries.append(country_dictionary)
-
-        building_dictionary = {
-            "date": date,
-            "countries": country_dictionaries,
-        }
+        })
 
         confirmed = 0
         recovered = 0
