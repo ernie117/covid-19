@@ -30,7 +30,6 @@ def get_countries():
 
 
 def purge_images():
-    print(os.getcwd())
     with os.scandir(Path("webapp/static/images")) as iterator:
         for filename in iterator:
             if filename.name.endswith("png"):
