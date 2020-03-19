@@ -13,10 +13,7 @@ def set_seaborn_features():
     sns.set_palette("colorblind")
 
 
-def build_line_plot(dataframe: DataFrame,
-                    country: str,
-                    dates: list,
-                    img_dir: str) -> None:
+def build_line_plot(dataframe: DataFrame, country: str, dates: list) -> None:
     """
     Creates and renders a Seaborn lineplot.
 
@@ -52,5 +49,5 @@ def build_line_plot(dataframe: DataFrame,
     plt.yticks(fontsize=12)
     plt.legend(prop=FontProperties(family="IBM Plex Mono Medium", size=12))
     plt.tight_layout(pad=0.3)
-    plt.savefig(Path(f"{img_dir}/{country.lower()}.png"))
+    plt.savefig(Path(f"webapp/static/images/{country}.png"))
     plt.close()

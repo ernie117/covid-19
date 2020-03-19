@@ -1,5 +1,6 @@
 import csv
 import os
+from pathlib import Path
 from typing import Dict
 
 import pandas
@@ -12,7 +13,7 @@ def get_dates(dataframe: DataFrame) -> list:
     return dataframe.dates.dt.strftime('%Y-%m-%d')
 
 
-def read_csv_files_to_dict(data_dir: str, country: str):
+def read_csv_files_to_dict(country: str):
     """
     Creates a dictionary wherein keys are dates corresponding
     to CSV file names, and values are the data in those CSVs.
@@ -25,7 +26,8 @@ def read_csv_files_to_dict(data_dir: str, country: str):
         "recovered": [],
         "deaths": [],
     }
-    filenames = sorted(os.scandir(data_dir), key=lambda x: x.name)
+    data_path = Path("webapp/COVID-19-data")
+    filenames = sorted(os.scandir(data_path), key=lambda x: x.name)
     for filename in filenames:
         if filename.name.endswith("csv"):
             with open(filename, "r", encoding="utf-8") as f_obj:
@@ -98,9 +100,9 @@ def data_to_dataframe(cases):
     return dataframe
 
 
-def main(country: str, data_dir: str, img_dir: str):
-    data = read_csv_files_to_dict(data_dir, country)
+def main(country: str):
+    data = read_csv_files_to_dict(country)
     dataframe = data_to_dataframe(data)
     dates = get_dates(dataframe)
     set_seaborn_features()
-    build_line_plot(dataframe, country.title(), dates, img_dir)
+    build_line_plot(dataframe, country, dates)

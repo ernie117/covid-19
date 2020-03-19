@@ -17,12 +17,10 @@ with open(Path("config/config.yml"), "r") as f:
 @app.route("/<country>")
 def home(country: str):
     purge_images()
-    country = country.lower()
 
-    if not check_for_existing_file(country):
-        etl_functions.main(country,
-                           Path("webapp/COVID-19-data"),
-                           Path("webapp/static/images"))
+    etl_functions.main(country.lower(),
+                       Path("webapp/COVID-19-data"),
+                       Path("webapp/static/images"))
 
     return render_template("index.html",
                            country=country,
