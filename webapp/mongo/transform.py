@@ -5,6 +5,7 @@ import json
 from csv import DictReader
 
 from webapp.mongo import request_csv
+from webapp.mongo.CountryTransformer import CountryTransformer
 
 COUNTRY_REGION = "Country/Region"
 COUNTRY_REGION_LC = "country/region"
@@ -24,9 +25,8 @@ def create_custom_dicts(dictreader: DictReader, date: str):
     for dictionary in dictreader:
         dictionary["date"] = date.split(".")[0]
 
-        # There are more of these that need to be checked and changed.
-        country = dictionary[COUNTRY_REGION]
-        dictionary[COUNTRY_REGION] = transform_country(country)
+        country_transformer = CountryTransformer(dictionary[COUNTRY_REGION])
+        dictionary[COUNTRY_REGION] = country_transformer.transform()
 
         new_dicts.append({
             "date": dictionary["date"],
@@ -97,15 +97,6 @@ def replace_empty_values(dictionary):
             dictionary[case] = 0
 
     return dictionary
-
-
-def transform_country(country: str):
-    if country.lower() == "mainland china":
-        return "China"
-    elif country.lower() == "uk":
-        return "United Kingdom"
-    elif country.lower() == "us":
-        return "United States"
 
 
 def main():
