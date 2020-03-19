@@ -1,19 +1,18 @@
 from csv import DictReader
 
-from webapp.mongo.CountryTransformer import CountryTransformer
+from webapp.mongo.country_transformer import CountryTransformer
 
 
 class CSVTransformer:
     COUNTRY_REGION: str = "Country/Region"
     COUNTRY_REGION_LC: str = "country/region"
-    list_of_custom_dicts = []
 
     def __init__(self, dict_reader: DictReader, date: str):
         self.dict_reader = dict_reader
         self.date = date.split(".")[0]
 
     def transform_csv_data(self):
-        pass
+        return self.reduce_dicts(self.create_custom_dicts())
 
     def create_custom_dicts(self):
         """
@@ -38,9 +37,9 @@ class CSVTransformer:
                 "deaths": dictionary["Deaths"]
             })
 
-        self.list_of_custom_dicts = new_dicts
+        return new_dicts
 
-    def reduce_dicts(self):
+    def reduce_dicts(self, list_of_custom_dicts):
         """
         Create a dict for each date with summed values for each country on
         that date.
@@ -50,7 +49,7 @@ class CSVTransformer:
         deaths = 0
 
         countries = {d[self.COUNTRY_REGION_LC]
-                     for d in self.list_of_custom_dicts}
+                     for d in list_of_custom_dicts}
 
         # Sum the confirmed, recovered and deaths for each region of a country
         # to have a total confirmed, recovered and deaths for each country
@@ -59,8 +58,8 @@ class CSVTransformer:
             "countries": []
         }
         for country in countries:
-            for dictionary in self.list_of_custom_dicts:
-                if dictionary[self.COUNTRY_REGION_LC].lower() == country.lower():
+            for dictionary in list_of_custom_dicts:
+                if dictionary[self.COUNTRY_REGION_LC] == country.lower():
                     dictionary = self.replace_empty_values(dictionary)
                     confirmed += int(dictionary["confirmed"])
                     recovered += int(dictionary["recovered"])
