@@ -1,4 +1,5 @@
 import csv
+import os
 import re
 from pathlib import Path
 from typing import Dict
@@ -6,11 +7,6 @@ from typing import Dict
 import requests
 import yaml
 from bs4 import BeautifulSoup
-
-with open(Path("config/config.yml"), "r") as f_obj:
-    CONFIG = yaml.load(f_obj, Loader=yaml.FullLoader)
-
-RAW_DATA_ROOT_URL = CONFIG["URLs"]["githubRawRootURL"]
 
 
 def request_html_content() -> BeautifulSoup:
@@ -20,7 +16,10 @@ def request_html_content() -> BeautifulSoup:
 
     :return: BeautifulSoup object of html
     """
-    html_resp = requests.get(CONFIG["URLs"]["githubCovid19RepoURL"]).content
+    with open(Path("config/config.yml"), "r") as f_obj:
+        config = yaml.load(f_obj, Loader=yaml.FullLoader)
+
+    html_resp = requests.get(config["URLs"]["githubCovid19RepoURL"]).content
 
     return BeautifulSoup(html_resp, "lxml")
 
@@ -32,11 +31,15 @@ def get_csv_a_tags(html: BeautifulSoup) -> Dict:
 
     :return: Dict of URLs for csv data and filenames
     """
+    with open(Path("config/config.yml"), "r") as f_obj:
+        config = yaml.load(f_obj, Loader=yaml.FullLoader)
+
+    raw_data_root_url = config["URLs"]["githubRawRootURL"]
     a_tags = html.find_all(href=re.compile(r"\.csv"))
     urls_and_filenames_dict = {"urls": [], "filenames": []}
 
     for tag in a_tags:
-        url = RAW_DATA_ROOT_URL + tag["href"].replace("blob/", "")
+        url = raw_data_root_url + tag["href"].replace("blob/", "")
         urls_and_filenames_dict["urls"].append(url)
         urls_and_filenames_dict["filenames"].append(tag["title"])
 
@@ -71,7 +74,7 @@ def get_new_csv(dictionary: Dict) -> Dict:
 
 def write_new_csv(data: Dict) -> None:
     """
-    If we have new csv data, write it to a csv file.
+    If we have new csv data: write it to a csv file.
 
     """
     if not data:

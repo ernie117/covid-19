@@ -25,3 +25,7 @@ def main():
     csv_data = download_csv(urls)
 
     return csv_data
+
+
+if __name__ == "__main__":
+    main()

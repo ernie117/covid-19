@@ -24,14 +24,9 @@ def create_custom_dicts(dictreader: DictReader, date: str):
     for dictionary in dictreader:
         dictionary["date"] = date.split(".")[0]
 
-        country = dictionary[COUNTRY_REGION]
         # There are more of these that need to be checked and changed.
-        # TODO move to own function and look at data to see which
-        # TODO countries need to be checked and transformed
-        if country.lower() == "mainland china":
-            dictionary[COUNTRY_REGION] = "China"
-        elif country.lower() == "uk":
-            dictionary[COUNTRY_REGION] = "United Kingdom"
+        country = dictionary[COUNTRY_REGION]
+        dictionary[COUNTRY_REGION] = transform_country(country)
 
         new_dicts.append({
             "date": dictionary["date"],
@@ -104,6 +99,15 @@ def replace_empty_values(dictionary):
     return dictionary
 
 
+def transform_country(country: str):
+    if country.lower() == "mainland china":
+        return "China"
+    elif country.lower() == "uk":
+        return "United Kingdom"
+    elif country.lower() == "us":
+        return "United States"
+
+
 def main():
     csv_list, dates = request_csv.main()
     reduced_dicts = []
@@ -115,4 +119,5 @@ def main():
         f.write(json.dumps(reduced_dicts, indent=2))
 
 
-main()
+if __name__ == "__main__":
+    main()
