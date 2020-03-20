@@ -1,18 +1,27 @@
 """
 Here we'll transform the data retrieved by the request module.
 """
+import json
+
+from webapp.mongo.csv_requester import CSVRequester
+from webapp.mongo.csv_transformer import CSVTransformer
 
 
-def main():
-    csv_list, dates = request_csv.main()
-    reduced_dicts = []
-    for csv, date in zip(csv_list, dates):
-        dicts = create_custom_dicts(csv, date)
-        reduced_dicts.append(reduce_dicts(dicts, date))
+class Transformer:
+    """
+    todo
+    """
 
-    with open("dates.json", "w") as f:
-        f.write(json.dumps(reduced_dicts, indent=2))
+    def __init__(self):
+        self.csv_requester = CSVRequester()
 
-
-if __name__ == "__main__":
-    main()
+    def main(self):
+        """
+        todo
+        :return:
+        """
+        r = self.csv_requester.check_for_new_csv()
+        for date, dictreader in r.items():
+            transformer = CSVTransformer(date, dictreader)
+            stuff = transformer.transform_csv_data()
+            print(json.dumps(stuff, indent=2))
