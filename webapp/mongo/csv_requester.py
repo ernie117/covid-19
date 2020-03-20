@@ -86,13 +86,3 @@ class CSVRequester:
             print("No new CSV data.")
 
         return new_data
-
-
-if __name__ == "__main__":
-    c = CSVRequester()
-    r = c.check_for_new_csv()
-    for date, dictreader in r.items():
-        transformer = CSVTransformer(date, dictreader)
-        stuff = transformer.transform_csv_data()
-        print(json.dumps(stuff, indent=2))
-        break
