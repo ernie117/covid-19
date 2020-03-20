@@ -46,7 +46,7 @@ class CSVTransformer:
                 "deaths": dictionary["Deaths"]
             })
 
-        return new_dicts
+        return sorted(new_dicts, key=lambda d: d[self.COUNTRY_REGION_LC])
 
     def _reduce_dicts(self, list_of_custom_dicts):
         """
