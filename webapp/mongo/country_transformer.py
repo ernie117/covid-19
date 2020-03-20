@@ -1,4 +1,10 @@
+"""
+todo
+"""
 class CountryTransformer:
+    """
+    todo
+    """
 
     CONGO_ALIASES = [
         "congo (brazzaville)",
@@ -10,13 +16,19 @@ class CountryTransformer:
         self.country = country.lower()
 
     def transform(self):
+        """
+        todo
+        :return:
+        """
         if self.country == "mainland china":
-            return "China"
+            return "china"
         elif self.country == "uk":
-            return "United Kingdom"
+            return "united kingdom"
         elif self.country == "us":
-            return "United States"
+            return "united states"
         elif self.country in self.CONGO_ALIASES:
-            return "Congo"
+            return "congo"
+        elif self.country == "viet nam":
+            return "vietnam"
         else:
             return self.country

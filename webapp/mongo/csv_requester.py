@@ -1,3 +1,6 @@
+"""
+todo
+"""
 import csv
 import json
 import re
@@ -12,20 +15,27 @@ from webapp.mongo.csv_transformer import CSVTransformer
 
 
 class CSVRequester:
-    CONFIG: dict
+    """
+    todo
+    """
+    config: dict
     FILENAMES_FILE: str = Path("webapp/COVID-19-data/current_filenames.txt")
     new_data = {}
 
     def __init__(self):
         with open(Path("config/config.yml"), "r") as f_obj:
-            self.CONFIG = yaml.load(f_obj, Loader=yaml.FullLoader)
+            self.config = yaml.load(f_obj, Loader=yaml.FullLoader)
         with open(self.FILENAMES_FILE, "r") as file_obj:
             self.current_filenames = file_obj.read().splitlines()
 
-        self.repo_url = self.CONFIG["URLs"]["githubCovid19RepoURL"]
-        self.root_url = self.CONFIG["URLs"]["githubRawRootURL"]
+        self.repo_url = self.config["URLs"]["githubCovid19RepoURL"]
+        self.root_url = self.config["URLs"]["githubRawRootURL"]
 
-    def check_for_new_csv(self) -> Dict:
+    def check_for_new_csv(self):
+        """
+        todo
+        :return:
+        """
         html = self._request_html_content()
         urls_files = self._get_urls(html)
         for url, file in zip(urls_files["urls"], urls_files["filenames"]):

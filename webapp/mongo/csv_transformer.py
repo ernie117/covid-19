@@ -1,9 +1,15 @@
+"""
+todo
+"""
 from csv import DictReader
 
 from webapp.mongo.country_transformer import CountryTransformer
 
 
 class CSVTransformer:
+    """
+    todo
+    """
     COUNTRY_REGION: str = "Country/Region"
     COUNTRY_REGION_LC: str = "country/region"
 
@@ -12,9 +18,13 @@ class CSVTransformer:
         self.dict_reader = dict_reader
 
     def transform_csv_data(self):
-        return self.reduce_dicts(self.create_custom_dicts())
+        """
+        todo
+        :return:
+        """
+        return self._reduce_dicts(self._create_custom_dicts())
 
-    def create_custom_dicts(self):
+    def _create_custom_dicts(self):
         """
         Alter the structure of dictionaries slightly by adding the date
         to each one, transforms some country names as they are
@@ -29,7 +39,7 @@ class CSVTransformer:
 
             new_dicts.append({
                 "date": self.date,
-                "country/region": dictionary[self.COUNTRY_REGION],
+                self.COUNTRY_REGION_LC: dictionary[self.COUNTRY_REGION],
                 "province/state": dictionary["Province/State"],
                 "confirmed": dictionary["Confirmed"],
                 "recovered": dictionary["Recovered"],
@@ -38,7 +48,7 @@ class CSVTransformer:
 
         return new_dicts
 
-    def reduce_dicts(self, list_of_custom_dicts):
+    def _reduce_dicts(self, list_of_custom_dicts):
         """
         Create a dict for each date with summed values for each country on
         that date.
@@ -59,7 +69,7 @@ class CSVTransformer:
         for country in countries:
             for dictionary in list_of_custom_dicts:
                 if dictionary[self.COUNTRY_REGION_LC] == country.lower():
-                    dictionary = self.replace_empty_values(dictionary)
+                    dictionary = self._replace_empty_values(dictionary)
                     confirmed += int(dictionary["confirmed"])
                     recovered += int(dictionary["recovered"])
                     deaths += int(dictionary["deaths"])
@@ -67,7 +77,7 @@ class CSVTransformer:
                     continue
 
             building_dictionary["countries"].append({
-                "country/region": country,
+                self.COUNTRY_REGION_LC: country,
                 "confirmed": confirmed,
                 "recovered": recovered,
                 "deaths": deaths
@@ -80,7 +90,7 @@ class CSVTransformer:
         return building_dictionary
 
     @staticmethod
-    def replace_empty_values(dictionary):
+    def _replace_empty_values(dictionary):
         """
         Some values in the raw csv are blank, this replaces them with zeroes.
 
