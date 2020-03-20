@@ -18,3 +18,5 @@ class CountryTransformer:
             return "United States"
         elif self.country in self.CONGO_ALIASES:
             return "Congo"
+        else:
+            return self.country

@@ -7,9 +7,9 @@ class CSVTransformer:
     COUNTRY_REGION: str = "Country/Region"
     COUNTRY_REGION_LC: str = "country/region"
 
-    def __init__(self, dict_reader: DictReader, date: str):
+    def __init__(self, date: str, dict_reader: DictReader):
+        self.date = date
         self.dict_reader = dict_reader
-        self.date = date.split(".")[0]
 
     def transform_csv_data(self):
         return self.reduce_dicts(self.create_custom_dicts())
@@ -17,20 +17,19 @@ class CSVTransformer:
     def create_custom_dicts(self):
         """
         Alter the structure of dictionaries slightly by adding the date
-        to each one. Also transforms some country names as they are
-        inconsistently-named in the source data.
+        to each one, transforms some country names as they are
+        inconsistently-named in the source data, and returns them sorted
+        alphabetically by country.
         """
         new_dicts = []
         for dictionary in self.dict_reader:
-            dictionary["date"] = self.date
-
             country = dictionary[self.COUNTRY_REGION]
             country_transformer = CountryTransformer(country)
             dictionary[self.COUNTRY_REGION] = country_transformer.transform()
 
             new_dicts.append({
-                "date": dictionary["date"],
-                self.COUNTRY_REGION.lower(): dictionary[self.COUNTRY_REGION],
+                "date": self.date,
+                "country/region": dictionary[self.COUNTRY_REGION],
                 "province/state": dictionary["Province/State"],
                 "confirmed": dictionary["Confirmed"],
                 "recovered": dictionary["Recovered"],
@@ -48,8 +47,8 @@ class CSVTransformer:
         recovered = 0
         deaths = 0
 
-        countries = {d[self.COUNTRY_REGION_LC]
-                     for d in list_of_custom_dicts}
+        countries = sorted({d[self.COUNTRY_REGION_LC]
+                            for d in list_of_custom_dicts})
 
         # Sum the confirmed, recovered and deaths for each region of a country
         # to have a total confirmed, recovered and deaths for each country

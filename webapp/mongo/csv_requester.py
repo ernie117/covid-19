@@ -1,4 +1,5 @@
 import csv
+import json
 import re
 from pathlib import Path
 from typing import Dict
@@ -6,6 +7,8 @@ from typing import Dict
 import requests
 import yaml
 from bs4 import BeautifulSoup
+
+from webapp.mongo.csv_transformer import CSVTransformer
 
 
 class CSVRequester:
@@ -78,6 +81,8 @@ class CSVRequester:
 if __name__ == "__main__":
     c = CSVRequester()
     r = c.check_for_new_csv()
-    d = r["03-18-2020"]
-    for thing in d:
-        print(thing)
+    for date, dictreader in r.items():
+        transformer = CSVTransformer(date, dictreader)
+        stuff = transformer.transform_csv_data()
+        print(json.dumps(stuff, indent=2))
+        break
