@@ -1,6 +1,7 @@
 """
 todo
 """
+import datetime
 from csv import DictReader
 
 from webapp.mongo.country_transformer import CountryTransformer
@@ -63,7 +64,7 @@ class CSVTransformer:
         # Sum the confirmed, recovered and deaths for each region of a country
         # to have a total confirmed, recovered and deaths for each country
         building_dictionary = {
-            "date": self.date,
+            "date": datetime.datetime.strptime(self.date, "%m-%d-%Y"),
             "countries": []
         }
         for country in countries:

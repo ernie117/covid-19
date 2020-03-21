@@ -7,6 +7,7 @@ import pandas
 from pandas import DataFrame
 
 from webapp.csv.plotting import build_line_plot, set_seaborn_features
+from webapp.mongo.country_transformer import CountryTransformer
 
 
 def get_dates(dataframe: DataFrame) -> list:
@@ -54,6 +55,7 @@ def extract_confirmed_deaths_recovered(reader: list, country: str,
     :param date:
     :return:
     """
+    country = CountryTransformer(country).transform()
     list_of_country_dicts = [d for d in reader
                              if country in d["Country/Region"].lower()]
 

@@ -1,21 +1,21 @@
 """
 Here we'll transform the data retrieved by the request module.
 """
-import json
 
 from webapp.mongo.csv_requester import CSVRequester
 from webapp.mongo.csv_transformer import CSVTransformer
+from webapp.mongo.dao import MongoDAO
 
 
-class Transformer:
+class Covid19DateDataETL:
     """
     todo
     """
+    new_dates = []
+    dao = MongoDAO("dates")
+    csv_requester = CSVRequester()
 
-    def __init__(self):
-        self.csv_requester = CSVRequester()
-
-    def main(self):
+    def extract(self):
         """
         todo
         :return:
@@ -23,5 +23,7 @@ class Transformer:
         r = self.csv_requester.check_for_new_csv()
         for date, dictreader in r.items():
             transformer = CSVTransformer(date, dictreader)
-            stuff = transformer.transform_csv_data()
-            print(json.dumps(stuff, indent=2))
+            self.new_dates.append(transformer.transform_csv_data())
+
+    def persist(self):
+        self.dao.insert_many_documents(self.new_dates)

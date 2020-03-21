@@ -1,30 +1,34 @@
-import os
 from pathlib import Path
 
 import yaml
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 
 from webapp.csv import etl_functions
-from webapp.utils.utils import purge_images, check_for_existing_file, \
-    get_countries
+from webapp.mongo.dao import MongoDAO
+from webapp.utils.utils import purge_images, get_countries
 
 app = Flask(__name__)
 
 with open(Path("config/config.yml"), "r") as f:
-    CONFIG = yaml.load(f, Loader=yaml.FullLoader)
+    app.config.update(
+        yaml.load(f, Loader=yaml.FullLoader)
+    )
 
 
 @app.route("/<country>")
 def home(country: str):
     purge_images()
 
-    etl_functions.main(country.lower(),
-                       Path("webapp/COVID-19-data"),
-                       Path("webapp/static/images"))
+    etl_functions.main(country.lower())
 
-    return render_template("index.html",
+    return render_template("country.html",
                            country=country,
                            countries=get_countries())
+
+
+@app.route("/json/<date>")
+def json_for_date(date: str):
+    return jsonify(MongoDAO("dates").get_one_document_by_date(date))
 
 
 if __name__ == "__main__":

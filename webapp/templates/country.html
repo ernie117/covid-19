@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COVID-19 ETL and Plotting</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
+</head>
+<body>
+<div>
+    <h1 class="my-header">Data for {{country.title()}}</h1>
+    <div class="img-table-div">
+        <div class="img-div">
+            <img class="my-img" alt="" src="../static/images/{{country}}.png"/>
+        </div>
+        <div class="inner-table">
+            <table class="my-table" id="my-table">
+                <thead class="my-table-header">
+                <tr>
+                    <th id="table-header">Countries</th>
+                </tr>
+                </thead>
+                {% for country in countries %}
+                <tr>
+                    <td>
+                        <a href="/{{country}}">
+                            <div style="width: 100%; height: 100%">
+                                {{country.title()}}
+                            </div>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            <div>
+                <input type="text" id="myInput" onkeyup="filter_table()"
+                       placeholder="Filter countries.." autofocus autocomplete="off">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function filter_table() {
+        const tableRows = Array.from(document.getElementById("my-table").getElementsByTagName("td"));
+        const input = document.getElementById("myInput");
+
+        let searchText = input.value.toLowerCase();
+
+        // Only show table rows that match input text
+        tableRows.forEach(row => {
+            row.innerText.toLowerCase().includes(searchText)
+                ? row.style.display = ""
+                : row.style.display = "none";
+        });
+
+        // If enter pressed grab the first of the filtered rows
+        input.addEventListener("keyup", event => {
+            if (event.key === "Enter") {
+                searchText = input.value.toLowerCase();
+                const country = tableRows.filter(row => {
+                    return row.innerText.trim().toLowerCase().includes(searchText);
+                });
+                // Only load the filtered country if there's one.
+                if (country.length === 1) {
+                    country[0].getElementsByTagName("div")[0].click();
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

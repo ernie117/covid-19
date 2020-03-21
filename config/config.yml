@@ -1,3 +1,5 @@
 URLs:
   githubRawRootURL: https://raw.githubusercontent.com
   githubCovid19RepoURL: https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_daily_reports
+directories:
+  currentDatesFile: ../COVID-19-data/current_filenames.txt

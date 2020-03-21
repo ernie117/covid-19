@@ -1,12 +1,12 @@
 import csv
-import os
 import re
 from pathlib import Path
 from typing import Dict
 
 import requests
-import yaml
 from bs4 import BeautifulSoup
+
+from ..app import app
 
 
 def request_html_content() -> BeautifulSoup:
@@ -16,10 +16,7 @@ def request_html_content() -> BeautifulSoup:
 
     :return: BeautifulSoup object of html
     """
-    with open(Path("config/config.yml"), "r") as f_obj:
-        config = yaml.load(f_obj, Loader=yaml.FullLoader)
-
-    html_resp = requests.get(config["URLs"]["githubCovid19RepoURL"]).content
+    html_resp = requests.get(app.config["URLs"]["githubCovid19RepoURL"]).content
 
     return BeautifulSoup(html_resp, "lxml")
 
@@ -31,10 +28,7 @@ def get_csv_a_tags(html: BeautifulSoup) -> Dict:
 
     :return: Dict of URLs for csv data and filenames
     """
-    with open(Path("config/config.yml"), "r") as f_obj:
-        config = yaml.load(f_obj, Loader=yaml.FullLoader)
-
-    raw_data_root_url = config["URLs"]["githubRawRootURL"]
+    raw_data_root_url = app.config["URLs"]["githubRawRootURL"]
     a_tags = html.find_all(href=re.compile(r"\.csv"))
     urls_and_filenames_dict = {"urls": [], "filenames": []}
 
@@ -53,7 +47,7 @@ def get_new_csv(dictionary: Dict) -> Dict:
 
     :return: Dict of new csv filename as key with data as value
     """
-    with open(Path("webapp/COVID-19-data/current_filenames.txt"),
+    with open(Path(app.config["directories"]["currentDatesFile"]),
               "r") as file_obj:
         current_filenames = file_obj.read().splitlines()
 

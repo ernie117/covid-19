@@ -1,6 +1,8 @@
 import csv
 import os
-from pathlib import Path, PurePath
+from pathlib import Path
+
+from webapp.mongo.country_transformer import CountryTransformer
 
 
 def check_for_existing_file(country: str):
@@ -20,13 +22,16 @@ def get_countries():
     with os.scandir(Path("webapp/COVID-19-data")) as iterator:
         for filename in iterator:
             if filename.name.endswith("csv"):
-                with open(Path("webapp/COVID-19-data/" + filename.name), "r") as f:
+                with open(Path("webapp/COVID-19-data/" + filename.name),
+                          "r") as f:
                     data = csv.DictReader(f)
                     for thing in data:
+                        if thing["Country/Region"] in filter_countries:
+                            continue
                         countries.append(thing["Country/Region"])
 
-    return sorted([country for country in set(countries)
-                   if country not in filter_countries])
+    return sorted({CountryTransformer(country).transform()
+                   for country in countries})
 
 
 def purge_images():

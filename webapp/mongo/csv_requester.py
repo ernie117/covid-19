@@ -2,34 +2,26 @@
 todo
 """
 import csv
-import json
 import re
-from pathlib import Path
 from typing import Dict
 
 import requests
-import yaml
 from bs4 import BeautifulSoup
 
-from webapp.mongo.csv_transformer import CSVTransformer
+from ..app import app
 
 
 class CSVRequester:
     """
     todo
     """
-    config: dict
-    FILENAMES_FILE: str = Path("webapp/COVID-19-data/current_filenames.txt")
+    config: dict = app.config
     new_data = {}
 
     def __init__(self):
-        with open(Path("config/config.yml"), "r") as f_obj:
-            self.config = yaml.load(f_obj, Loader=yaml.FullLoader)
-        with open(self.FILENAMES_FILE, "r") as file_obj:
-            self.current_filenames = file_obj.read().splitlines()
-
         self.repo_url = self.config["URLs"]["githubCovid19RepoURL"]
         self.root_url = self.config["URLs"]["githubRawRootURL"]
+        self.current_dates = self.config["directories"]["currentDatesFile"]
 
     def check_for_new_csv(self):
         """
@@ -77,7 +69,7 @@ class CSVRequester:
         :return: Dict of new csv filename as key with data as value
         """
         new_data = {}
-        if github_filename not in self.current_filenames:
+        if github_filename not in self.current_dates:
             print("New CSV data to download...")
             response = requests.get(url).content.decode("utf-8-sig")
             data = csv.DictReader(response.splitlines())
