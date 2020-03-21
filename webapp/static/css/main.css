@@ -22,9 +22,9 @@ input {
     border-bottom: 1px solid #ddd;
     font-family: "IBM Plex Mono SemiBold", Arial, sans-serif;
     margin-top: 770px;
-    margin-left: 26px;
+    margin-right: 20px;
     position: absolute;
-    width: 27%;
+    width: 280px;
 }
 
 th {
@@ -57,7 +57,7 @@ th {
 
 .my-table {
     float: right;
-    width: 95%;
+    width: 100%;
     border-collapse: collapse;
     font-family: "IBM Plex Mono SemiBold", Arial, sans-serif;
 }
@@ -74,7 +74,8 @@ th {
 }
 
 .inner-table {
-    margin-right: 10px;
+    margin: auto;
+    width: 300px;
     height: 760px;
     overflow-y: auto;
     box-shadow: 5px 5px 5px #696969;

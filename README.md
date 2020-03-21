@@ -1,12 +1,12 @@
-## Simple Flask COVID-19 Data Visualizer
+## WIP Simple Flask COVID-19 Data Visualizer
 
 Uses the data found here: https://github.com/CSSEGISandData/COVID-19 to produce graphs showing confirmed cases, recovered cases and deaths.
 
-### Example Plot
-![Plot showing China COVID-19 Cases](china.png)
+### Example Page
+![Screenshot showing China COVID-19 Cases](screenshot.png)
 
 ## TODO
 
-* Implement Mongo storage instead of CSV files
-* Refactor etl_functions accordingly
+* Finish the switch from CSV files to Mongo
+* Finish refactoring functions to classes
 * Switch from Seaborn to Bokeh

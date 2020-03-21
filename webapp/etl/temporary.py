@@ -1,4 +1,7 @@
-from webapp.etl.covid_19_date_data import Covid19DateDataETL
+# top_transformer = Covid19DateDataETL()
+# top_transformer.execute_etl()
+from webapp.etl.dao import MongoDAO
 
-top_transformer = Covid19DateDataETL()
-top_transformer.execute_etl()
+mongo = MongoDAO("dates")
+# data = mongo.get_all_dates_by_country()
+# for

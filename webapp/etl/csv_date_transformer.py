@@ -2,7 +2,6 @@
 todo
 """
 import datetime
-from csv import DictReader
 
 from webapp.etl.country_transformer import CountryTransformer
 

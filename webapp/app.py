@@ -26,10 +26,14 @@ def home(country: str):
                            countries=get_countries())
 
 
-@app.route("/json/<date>")
+@app.route("/json_date/<date>")
 def json_for_date(date: str):
-    result = MongoDAO("dates").get_one_document_by_date(date)
-    return jsonify(result)
+    return jsonify(MongoDAO("dates").get_one_document_by_date(date))
+
+
+@app.route("/json_country/<country>")
+def json_for_country(country: str):
+    return jsonify(MongoDAO("dates").get_all_dates_by_country(country))
 
 
 if __name__ == "__main__":

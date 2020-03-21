@@ -3,7 +3,6 @@ Contains a class that acts as an abstraction layer in front of all the extract,
 transform and load logic. CSV data is requested from github, transformed into
 objects organised by date and loaded into mongoDB.
 """
-import json
 
 from webapp.etl.csv_date_transformer import CSVDateTransformer
 from webapp.etl.csv_requester import CSVRequester
@@ -23,13 +22,12 @@ class Covid19DateDataETL:
     def execute_etl(self):
         """
         todo
-        :return:
         """
-        if data := self._extract:
-            print("No new data available!")
-            return
+        self.data = self._extract()
 
-        self.data = data
+        if not self.data:
+            print("No new data available!")
+
         self._transform()
         self._load()
 
