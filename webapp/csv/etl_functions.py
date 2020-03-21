@@ -11,7 +11,7 @@ from webapp.mongo.country_transformer import CountryTransformer
 
 
 def get_dates(dataframe: DataFrame) -> list:
-    return dataframe.dates.dt.strftime('%Y-%m-%d')
+    return dataframe.dates.dt.strftime('%m-%d')
 
 
 def read_csv_files_to_dict(country: str):

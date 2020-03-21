@@ -1,5 +1,8 @@
 """
-Here we'll transform the data retrieved by the request module.
+Contains a class that acts as an abstraction layer in front
+of all the extract, transform and load logic. CSV data is
+requested from github, transformed by CSVTransformer and
+loaded into mongoDB.
 """
 
 from webapp.mongo.csv_requester import CSVRequester
@@ -11,19 +14,39 @@ class Covid19DateDataETL:
     """
     todo
     """
-    new_dates = []
+    data = {}
+    dates = []
     dao = MongoDAO("dates")
     csv_requester = CSVRequester()
 
-    def extract(self):
+    def execute_etl(self):
         """
         todo
         :return:
         """
-        r = self.csv_requester.check_for_new_csv()
-        for date, dictreader in r.items():
-            transformer = CSVTransformer(date, dictreader)
-            self.new_dates.append(transformer.transform_csv_data())
+        self._extract()
+        self._transform()
+        self._load()
 
-    def persist(self):
-        self.dao.insert_many_documents(self.new_dates)
+    def _extract(self):
+        """
+        todo
+        :return:
+        """
+        self.data = self.csv_requester.check_for_new_csv()
+
+    def _transform(self):
+        """
+        todo
+        :return:
+        """
+        for date, dictreader in self.data.items():
+            transformer = CSVTransformer(date, dictreader)
+            self.dates.append(transformer.transform_csv_data())
+
+    def _load(self):
+        """
+        todo
+        :return:
+        """
+        self.dao.insert_many_documents(self.dates)
