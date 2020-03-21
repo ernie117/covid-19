@@ -25,26 +25,29 @@ class Covid19DateDataETL:
         todo
         :return:
         """
-        self._extract()
+        if data := self._extract:
+            print("No new data available!")
+            return
+
+        self.data = data
         self._transform()
-        # self._load()
+        self._load()
 
     def _extract(self):
         """
         todo
         :return:
         """
-        self.data = self.csv_requester.check_for_new_csv()
+        return self.csv_requester.check_for_new_csv()
 
     def _transform(self):
         """
         todo
         :return:
         """
-        self.dates.append(
+        self.dates.extend(
             self.csv_date_transformer.transform_csv_data(self.data)
         )
-        print(json.dumps(self.dates[-1], indent=2, default=str))
 
     def _load(self):
         """

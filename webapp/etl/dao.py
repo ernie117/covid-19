@@ -1,6 +1,7 @@
 """
 todo
 """
+import datetime
 from typing import Dict
 
 from pymongo import MongoClient
@@ -23,8 +24,7 @@ class MongoDAO:
         :return:
         """
         collection = self.db.get_collection(self.collection_name)
-        result = collection.insert_one(document)
-        print(result.inserted_id)
+        collection.insert_one(document)
 
     def insert_many_documents(self, documents: list):
         """
@@ -32,9 +32,12 @@ class MongoDAO:
         :param documents:
         :return:
         """
+        if not documents:
+            print("No Documents to insert!")
+            return
+
         collection = self.db.get_collection(self.collection_name)
-        result = collection.insert_many(documents)
-        print(result.inserted_ids)
+        collection.insert_many(documents)
 
     def get_one_document_by_date(self, date: str):
         """
@@ -42,7 +45,9 @@ class MongoDAO:
         :param date:
         :return:
         """
-        pass
+        collection = self.db.get_collection(self.collection_name)
+        date_obj = datetime.datetime.strptime(date, "%Y-%m-%d")
+        return collection.find_one({"date": {"$eq": date_obj}}, {"_id": False})
 
     def get_many_document_by_date(self, date: str):
         """

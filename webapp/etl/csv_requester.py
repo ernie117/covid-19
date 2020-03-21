@@ -3,6 +3,7 @@ todo
 """
 import csv
 import re
+from pathlib import Path
 from typing import Dict
 
 import requests
@@ -21,13 +22,16 @@ class CSVRequester:
     def __init__(self):
         self.repo_url = self.config["URLs"]["githubCovid19RepoURL"]
         self.root_url = self.config["URLs"]["githubRawRootURL"]
-        self.current_dates = self.config["directories"]["currentDatesFile"]
+        with open(Path(self.config["directories"]["currentDatesFile"]),
+                  "r") as file_obj:
+            self.current_dates = file_obj.read().splitlines()
 
     def check_for_new_csv(self):
         """
         todo
         :return:
         """
+
         html = self._request_html_content()
         urls_files = self._get_urls(html)
         for url, file in zip(urls_files["urls"], urls_files["filenames"]):
@@ -70,11 +74,11 @@ class CSVRequester:
         """
         new_data = {}
         if github_filename not in self.current_dates:
-            print("New CSV data. Downloading...")
+            print(f"New data for {github_filename}. Downloading...")
             response = requests.get(url).content.decode("utf-8-sig")
             data = csv.DictReader(response.splitlines())
             new_data[github_filename.split(".")[0]] = data
         else:
-            print("No new CSV data.")
+            print(f"Already have {github_filename} data.")
 
         return new_data

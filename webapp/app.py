@@ -28,7 +28,8 @@ def home(country: str):
 
 @app.route("/json/<date>")
 def json_for_date(date: str):
-    return jsonify(MongoDAO("dates").get_one_document_by_date(date))
+    result = MongoDAO("dates").get_one_document_by_date(date)
+    return jsonify(result)
 
 
 if __name__ == "__main__":
