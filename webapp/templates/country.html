@@ -42,24 +42,23 @@
     function filter_table() {
         const tableRows = Array.from(document.getElementById("my-table").getElementsByTagName("td"));
         const input = document.getElementById("myInput");
-
         let searchText = input.value.toLowerCase();
 
-        // Only show table rows that match input text
+        // Only show table rows that match input text.
         tableRows.forEach(row => {
             row.innerText.toLowerCase().includes(searchText)
                 ? row.style.display = ""
                 : row.style.display = "none";
         });
 
-        // If enter pressed grab the first of the filtered rows
+        // If enter pressed grab the first of the filtered rows.
         input.addEventListener("keyup", event => {
             if (event.key === "Enter") {
                 searchText = input.value.toLowerCase();
                 const country = tableRows.filter(row => {
                     return row.innerText.trim().toLowerCase().includes(searchText);
                 });
-                // Only load the filtered country if there's one.
+                // Only click and load the filtered country if there's one of them.
                 if (country.length === 1) {
                     country[0].getElementsByTagName("div")[0].click();
                 }

@@ -1,6 +1,6 @@
 import unittest
 
-from webapp.mongo.country_transformer import CountryTransformer
+from webapp.etl.country_transformer import CountryTransformer
 
 
 class TestCountryTransformer(unittest.TestCase):

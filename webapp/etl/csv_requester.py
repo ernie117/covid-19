@@ -70,7 +70,7 @@ class CSVRequester:
         """
         new_data = {}
         if github_filename not in self.current_dates:
-            print("New CSV data to download...")
+            print("New CSV data. Downloading...")
             response = requests.get(url).content.decode("utf-8-sig")
             data = csv.DictReader(response.splitlines())
             new_data[github_filename.split(".")[0]] = data

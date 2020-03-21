@@ -4,28 +4,29 @@ todo
 import datetime
 from csv import DictReader
 
-from webapp.mongo.country_transformer import CountryTransformer
+from webapp.etl.country_transformer import CountryTransformer
 
 
-class CSVTransformer:
+class CSVDateTransformer:
     """
     todo
     """
     COUNTRY_REGION: str = "Country/Region"
     COUNTRY_REGION_LC: str = "country/region"
 
-    def __init__(self, date: str, dict_reader: DictReader):
-        self.date = date
-        self.dict_reader = dict_reader
-
-    def transform_csv_data(self):
+    def transform_csv_data(self, data):
         """
         todo
         :return:
         """
-        return self._reduce_dicts(self._create_custom_dicts())
+        transformed_data = []
+        for date, dictreader in data.items():
+            custom_dicts = self._create_custom_dicts(date, dictreader)
+            transformed_data.append(self._reduce_dicts(date, custom_dicts))
 
-    def _create_custom_dicts(self):
+        return transformed_data
+
+    def _create_custom_dicts(self, date: str, dictreader):
         """
         Alter the structure of dictionaries slightly by adding the date
         to each one, transforms some country names as they are
@@ -33,13 +34,13 @@ class CSVTransformer:
         alphabetically by country.
         """
         new_dicts = []
-        for dictionary in self.dict_reader:
+        for dictionary in dictreader:
             country = dictionary[self.COUNTRY_REGION]
             country_transformer = CountryTransformer(country)
             dictionary[self.COUNTRY_REGION] = country_transformer.transform()
 
             new_dicts.append({
-                "date": self.date,
+                "date": date,
                 self.COUNTRY_REGION_LC: dictionary[self.COUNTRY_REGION],
                 "province/state": dictionary["Province/State"],
                 "confirmed": dictionary["Confirmed"],
@@ -49,7 +50,7 @@ class CSVTransformer:
 
         return sorted(new_dicts, key=lambda d: d[self.COUNTRY_REGION_LC])
 
-    def _reduce_dicts(self, list_of_custom_dicts):
+    def _reduce_dicts(self, date: str, list_of_custom_dicts):
         """
         Create a dict for each date with summed values for each country on
         that date.
@@ -64,7 +65,7 @@ class CSVTransformer:
         # Sum the confirmed, recovered and deaths for each region of a country
         # to have a total confirmed, recovered and deaths for each country
         building_dictionary = {
-            "date": datetime.datetime.strptime(self.date, "%m-%d-%Y"),
+            "date": datetime.datetime.strptime(date, "%m-%d-%Y"),
             "countries": []
         }
         for country in countries:
