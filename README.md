@@ -9,4 +9,5 @@ Uses the data found here: https://github.com/CSSEGISandData/COVID-19 to produce 
 
 * Finish the switch from CSV files to Mongo
 * Finish refactoring functions to classes
+* Implement proper logging
 * Switch from Seaborn to Bokeh
