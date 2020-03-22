@@ -4,7 +4,7 @@ import yaml
 from flask import Flask, render_template, jsonify
 
 from webapp.csv import etl_functions
-from webapp.etl.dao import MongoDAO
+from webapp.etl.mongo_dao import MongoDAO
 from webapp.utils.utils import purge_images, get_countries
 
 app = Flask(__name__)

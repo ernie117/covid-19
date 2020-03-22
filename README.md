@@ -1,4 +1,4 @@
-## WIP Simple Flask COVID-19 Data Visualizer
+## Simple WIP Flask COVID-19 Data Visualizer
 
 Uses the data found here: https://github.com/CSSEGISandData/COVID-19 to produce graphs showing confirmed cases, recovered cases and deaths.
 
@@ -9,5 +9,5 @@ Uses the data found here: https://github.com/CSSEGISandData/COVID-19 to produce 
 
 * Finish the switch from CSV files to Mongo
 * Finish refactoring functions to classes
-* Implement proper logging
+* Finished implementing proper logging
 * Switch from Seaborn to Bokeh

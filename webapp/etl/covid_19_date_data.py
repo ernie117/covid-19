@@ -6,15 +6,14 @@ objects organised by date and loaded into mongoDB.
 
 from webapp.etl.csv_date_transformer import CSVDateTransformer
 from webapp.etl.csv_requester import CSVRequester
-from webapp.etl.dao import MongoDAO
+from webapp.etl.mongo_dao import MongoDAO
 
 
 class Covid19DateDataETL:
     """
     todo
     """
-    data = {}
-    dates = []
+    date_documents = []
     dao = MongoDAO("dates")
     csv_requester = CSVRequester()
     csv_date_transformer = CSVDateTransformer()
@@ -23,33 +22,36 @@ class Covid19DateDataETL:
         """
         todo
         """
-        self.data = self._extract()
+        urls_and_dates = self.csv_requester.check_for_new_csv()
 
-        if not self.data:
+        if not urls_and_dates:
             print("No new data available!")
 
-        self._transform()
+        for url, file in urls_and_dates:
+            requested_data = self._request(url, file)
+            self._transform(requested_data)
+
         self._load()
 
-    def _extract(self):
+    def _request(self, url: str, filename: str):
         """
         todo
         :return:
         """
-        return self.csv_requester.check_for_new_csv()
+        return self.csv_requester.request_new_csv(url, filename)
 
-    def _transform(self):
+    def _transform(self, data):
         """
         todo
         :return:
         """
-        self.dates.extend(
-            self.csv_date_transformer.transform_csv_data(self.data)
-        )
+        transformed_data = self.csv_date_transformer.transform_csv_data(data)
+        if transformed_data:
+            self.date_documents.extend(transformed_data)
 
     def _load(self):
         """
         todo
         :return:
         """
-        self.dao.insert_many_documents(self.dates)
+        self.dao.insert_many_documents(self.date_documents)

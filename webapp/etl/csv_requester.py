@@ -4,12 +4,13 @@ todo
 import csv
 import re
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Set
 
 import requests
 from bs4 import BeautifulSoup
 
 from ..app import app
+from ..loggers.loggers import build_logger
 
 
 class CSVRequester:
@@ -20,6 +21,7 @@ class CSVRequester:
     new_data = {}
 
     def __init__(self):
+        self.logger = build_logger("CSVRequester")
         self.repo_url = self.config["URLs"]["githubCovid19RepoURL"]
         self.root_url = self.config["URLs"]["githubRawRootURL"]
         with open(Path(self.config["directories"]["currentDatesFile"]),
@@ -31,15 +33,25 @@ class CSVRequester:
         todo
         :return:
         """
+        return self._get_urls()
 
-        html = self._request_html_content()
-        urls_files = self._get_urls(html)
-        for url, file in zip(urls_files["urls"], urls_files["filenames"]):
-            self.new_data.update(self._get_new_csv(file, url))
+    def _get_urls(self) -> Set:
+        """
+        Interrogates the requested HTML for hrefs leading to COVID-19
+        csv data files and their filenames (dates).
 
-        return self.new_data
+        :return: Dict of URLs for csv data and filenames
+        """
+        a_tags = self._request_repo_html().find_all(href=re.compile(r"\.csv"))
+        urls_and_filenames = set()
 
-    def _request_html_content(self) -> BeautifulSoup:
+        for tag in a_tags:
+            url = self.root_url + tag["href"].replace("blob/", "")
+            urls_and_filenames.add((url, tag["title"]))
+
+        return urls_and_filenames
+
+    def _request_repo_html(self) -> BeautifulSoup:
         """
         Simply requests the webpage content from the daily reports
         data page of Johns Hopkins COVID-19 repo.
@@ -48,24 +60,7 @@ class CSVRequester:
         """
         return BeautifulSoup(requests.get(self.repo_url).content, "lxml")
 
-    def _get_urls(self, html: BeautifulSoup) -> Dict:
-        """
-        Interrogates the requested HTML for hrefs leading to COVID-19
-        csv data files and their filenames (dates).
-
-        :return: Dict of URLs for csv data and filenames
-        """
-        a_tags = html.find_all(href=re.compile(r"\.csv"))
-        urls_and_filenames = {"urls": [], "filenames": []}
-
-        for tag in a_tags:
-            url = self.root_url + tag["href"].replace("blob/", "")
-            urls_and_filenames["urls"].append(url)
-            urls_and_filenames["filenames"].append(tag["title"])
-
-        return urls_and_filenames
-
-    def _get_new_csv(self, github_filename: str, url: str) -> Dict:
+    def request_new_csv(self, url: str, github_filename: str) -> Dict:
         """
         Checks our list of csv files against those available in
         the COVID-19 repo and identify any new ones to download.
@@ -74,11 +69,11 @@ class CSVRequester:
         """
         new_data = {}
         if github_filename not in self.current_dates:
-            print(f"New data for {github_filename}. Downloading...")
+            self.logger.info("New data for %s. Downloading...", github_filename)
             response = requests.get(url).content.decode("utf-8-sig")
             data = csv.DictReader(response.splitlines())
             new_data[github_filename.split(".")[0]] = data
         else:
-            print(f"Already have {github_filename} data.")
+            self.logger.info("Already have %s data.", github_filename)
 
         return new_data

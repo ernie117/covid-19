@@ -6,7 +6,7 @@ from typing import Dict
 import requests
 from bs4 import BeautifulSoup
 
-from ..app import app
+from webapp.app import app
 
 
 def request_html_content() -> BeautifulSoup:

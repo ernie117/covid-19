@@ -6,6 +6,8 @@ from typing import Dict, List
 
 from pymongo import MongoClient
 
+from webapp.loggers.loggers import build_logger
+
 
 class MongoDAO:
     """
@@ -15,6 +17,7 @@ class MongoDAO:
     db = client.get_database("covid-19")
 
     def __init__(self, collection_name: str):
+        self.logger = build_logger("MongoDAO")
         self.collection_name = collection_name
 
     def insert_one_document(self, document: Dict) -> None:
@@ -33,11 +36,12 @@ class MongoDAO:
         :return:
         """
         if not documents:
-            print("No Documents to insert!")
+            self.logger.info("No Documents to insert!")
             return
 
         collection = self.db.get_collection(self.collection_name)
-        print(f"Inserting documents into {self.collection_name} collection")
+        self.logger.info("Inserting documents into %s collection",
+                         self.collection_name)
         collection.insert_many(documents)
 
     def get_one_document_by_date(self, date: str) -> Dict:
@@ -48,7 +52,7 @@ class MongoDAO:
         """
         collection = self.db.get_collection(self.collection_name)
         date_obj = datetime.datetime.strptime(date, "%Y-%m-%d")
-        print(f"Retrieving documents by date {date}.")
+        self.logger.info("Retrieving documents by date %s.", date)
         result = collection.find_one({"date": {"$eq": date_obj}}, {"_id": False})
 
         return result if result else {"not found": "no data for that date"}
