@@ -6,5 +6,7 @@ country_map = {
     "congo (kinshasa)": "congo",
     "republic of the congo": "congo",
     "viet nam": "vietnam",
-    "taiwan*": "taiwan"
+    "taiwan*": "taiwan",
+    "republic of korea": "south korea",
+    "korea, south": "south korea"
 }

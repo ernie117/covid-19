@@ -53,7 +53,10 @@ class MongoDAO:
         collection = self.db.get_collection(self.collection_name)
         date_obj = datetime.datetime.strptime(date, "%Y-%m-%d")
         self.logger.info("Retrieving documents by date %s.", date)
-        result = collection.find_one({"date": {"$eq": date_obj}}, {"_id": False})
+        result = collection.find_one(
+            {"date": {"$eq": date_obj}},
+            {"_id": False}
+        )
 
         return result if result else {"not found": "no data for that date"}
 
@@ -62,19 +65,19 @@ class MongoDAO:
         todo
         :return:
         """
-        # filter by country and return the confirmed, recovered and deaths
+        # filter by country and return the date, confirmed, recovered and deaths
         pipeline = [
-            {'$match': {'countries.country/region': country}},
             {'$project': {
                 'cases': {'$filter': {
                     'input': '$countries',
-                    'as': 'country',
-                    'cond': {'$eq': ['$$country.country/region', country]}
+                    'as': 'cases',
+                    'cond': {'$eq': ['$$cases.country/region', country]}
                 }
                 },
+                'date': 1,
                 '_id': 0}}
         ]
 
         collection = self.db.get_collection("dates")
-        return sorted(list(collection.aggregate(pipeline)),
-                      key=lambda d: d["cases"][0]["confirmed"])
+        result = collection.aggregate(pipeline=pipeline)
+        return list(filter(lambda d: d["cases"], result))

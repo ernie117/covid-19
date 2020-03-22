@@ -2,11 +2,9 @@
 todo
 """
 import datetime
-import logging
-import sys
 
-from webapp.app import app
 from webapp.etl.country_transformer import CountryTransformer
+from webapp.loggers.loggers import build_logger
 
 
 class CSVDateTransformer:
@@ -17,14 +15,7 @@ class CSVDateTransformer:
     COUNTRY_REGION_LC: str = "country/region"
 
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(level=logging.INFO)
-        formatter = logging.Formatter(
-            '[%(asctime)s - %(module)s] - %(levelname)s - %(message)s')
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setLevel(level=logging.INFO)
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
+        self.logger = build_logger("CSVDateTransformer")
 
     def transform_csv_data(self, data):
         """
