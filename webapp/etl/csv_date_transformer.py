@@ -2,6 +2,7 @@
 todo
 """
 import datetime
+from typing import List, Dict
 
 from webapp.etl.country_transformer import CountryTransformer
 from webapp.loggers.loggers import build_logger
@@ -9,7 +10,8 @@ from webapp.loggers.loggers import build_logger
 
 class CSVDateTransformer:
     """
-    todo
+    Class containing all logic required to transform CSV data from GitHub into
+    custom dictionary objects representing documents to be persisted in Mongo.
     """
     COUNTRY_REGION: str = "Country/Region"
     COUNTRY_REGION_LC: str = "country/region"
@@ -17,24 +19,38 @@ class CSVDateTransformer:
     def __init__(self):
         self.logger = build_logger("CSVDateTransformer")
 
-    def transform_csv_data(self, data):
+    def transform_csv_data(self, data) -> List[Dict]:
         """
-        todo
-        :return:
+        Entry point for transforming CSV data requested from the Johns Hopkins
+        GitHub repo.
+
+        :return: list of transformed dictionaries
         """
         transformed_data = []
         for date, dictreader in data.items():
-            custom_dicts = self._create_custom_dicts(date, dictreader)
-            transformed_data.append(self._reduce_dicts(date, custom_dicts))
+            custom_dicts = self._create_custom_dicts(dictreader)
+            transformed_data.append(self._create_documents(date, custom_dicts))
 
         return transformed_data
 
-    def _create_custom_dicts(self, date: str, dictreader):
+    def _create_custom_dicts(self, dictreader) -> List[Dict]:
         """
-        Alter the structure of dictionaries slightly by adding the date
-        to each one, transforms some country names as they are
-        inconsistently-named in the source data, and returns them sorted
-        alphabetically by country.
+        Create an intermediate structure for transformation. The structure of
+        dicts in the DictReader is altered to dicts with custom keys. Also
+        transforms country names to preferred/consistent names. Dicts are
+        returned in a list sorted alphabetically by country.
+
+        Example resulting dict:
+        {
+            "country/region": italy,
+            "province/state": "",
+            "confirmed": "10",
+            "recovered": "",
+            "deaths": ""
+        }
+
+        :param dictreader: DictReader object of data retrieved from GitHub
+        :return: list of custom dicts sorted alphabetically by country
         """
         new_dicts = []
         for dictionary in dictreader:
@@ -43,7 +59,6 @@ class CSVDateTransformer:
             dictionary[self.COUNTRY_REGION] = country_transformer.transform()
 
             new_dicts.append({
-                "date": date,
                 self.COUNTRY_REGION_LC: dictionary[self.COUNTRY_REGION],
                 "province/state": dictionary["Province/State"],
                 "confirmed": dictionary["Confirmed"],
@@ -53,15 +68,33 @@ class CSVDateTransformer:
 
         return sorted(new_dicts, key=lambda d: d[self.COUNTRY_REGION_LC])
 
-    def _reduce_dicts(self, date: str, list_of_custom_dicts):
+    def _create_documents(self, date: str,
+                          list_of_custom_dicts: List[Dict]) -> Dict[str, any]:
         """
-        Create a dict for each date with summed values for each country on
-        that date.
-        """
-        confirmed = 0
-        recovered = 0
-        deaths = 0
+        Given a list of custom dicts provided by _create_custom_dicts, cases of
+        each country's provinces/states are summed to provide totals for
+        confirmed, recovered and deaths for each country. Dicts are built
+        representing Mongo documents that will be persisted containing a date
+        key and an array of objects for each country with data for that date.
 
+        Example resulting dict:
+        {
+        "date": 01-22-2020 00:00:00",
+        "countries": [
+                {
+                    "country/region": "italy",
+                    "confirmed": 10,
+                    "recovered": 0,
+                    "deaths": 0
+                }
+                ...
+            ]
+        }
+
+        :param date: String of date for requested data.
+        :param list_of_custom_dicts: Dicts produced by _create_custom_dicts
+        :return: Final transformed Dict representing a Document to be persisted
+        """
         countries = sorted({d[self.COUNTRY_REGION_LC]
                             for d in list_of_custom_dicts})
 
@@ -71,6 +104,12 @@ class CSVDateTransformer:
             "date": datetime.datetime.strptime(date, "%m-%d-%Y"),
             "countries": []
         }
+
+        confirmed = 0
+        recovered = 0
+        deaths = 0
+
+        self.logger.info("Building new document for date '%s'", date)
         for country in countries:
             for dictionary in list_of_custom_dicts:
                 if dictionary[self.COUNTRY_REGION_LC] == country.lower():
@@ -81,7 +120,6 @@ class CSVDateTransformer:
                 else:
                     continue
 
-            self.logger.info("Building new document for date '%s'", date)
             building_dictionary["countries"].append({
                 self.COUNTRY_REGION_LC: country,
                 "confirmed": confirmed,
@@ -96,12 +134,12 @@ class CSVDateTransformer:
         return building_dictionary
 
     @staticmethod
-    def _replace_empty_values(dictionary):
+    def _replace_empty_values(dictionary: Dict) -> Dict:
         """
         Some values in the raw csv are blank, this replaces them with zeroes.
 
-        :param dictionary:
-        :return:
+        :param dictionary: Custom dict produced by _create_custom_dicts
+        :return: Input dictionary with blank values converted to int 0
         """
         for case in ("confirmed", "recovered", "deaths"):
             if not dictionary[case]:

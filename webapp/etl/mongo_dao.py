@@ -1,17 +1,21 @@
 """
-todo
+Contains the class acting as the direct interface to a standalone MongoDB
+'covid-19'.
 """
 import datetime
 from typing import Dict, List
 
-from pymongo import MongoClient
+from pymongo import MongoClient, WriteConcern
+from pymongo.results import InsertManyResult, InsertOneResult
 
 from webapp.loggers.loggers import build_logger
 
 
 class MongoDAO:
     """
-    todo
+    Data access class that uses the PyMongo package to interact directly with
+    a standalone mongo instance to retrieve and insert documents to and from the
+    'covid-19' db.
     """
     client = MongoClient()
     db = client.get_database("covid-19")
@@ -19,53 +23,55 @@ class MongoDAO:
     def __init__(self, collection_name: str):
         self.logger = build_logger("MongoDAO")
         self.collection_name = collection_name
+        self.collection = self.db.get_collection(
+            collection_name, write_concern=WriteConcern(w=1)
+        )
 
-    def insert_one_document(self, document: Dict) -> None:
+    def insert_one_document(self, document: Dict) -> InsertOneResult:
         """
-        todo
-        :param document:
-        :return:
-        """
-        collection = self.db.get_collection(self.collection_name)
-        collection.insert_one(document)
+        Insert a single document into specified collection of covid-19 db.
 
-    def insert_many_documents(self, documents: List[Dict]) -> None:
+        :param document: Dict representing document to be persisted.
+        :return: InsertOneResult representing our write result.
         """
-        todo
-        :param documents:
-        :return:
-        """
-        if not documents:
-            self.logger.info("No Documents to insert!")
-            return
+        self.logger.info("Inserting one document in %s.", self.collection_name)
 
-        collection = self.db.get_collection(self.collection_name)
-        self.logger.info("Inserting documents into %s collection",
-                         self.collection_name)
-        collection.insert_many(documents)
+        return self.collection.insert_one(document)
 
-    def get_one_document_by_date(self, date: str) -> Dict:
+    def insert_many_documents(self, documents: List[Dict]) -> InsertManyResult:
         """
-        todo
-        :param date:
-        :return:
+        Inserts multiple documents into the specified collection of covid-19 db.
+
+        :param documents: Multiple dicts representing documents to be persisted.
+        :return: InsertManyResult representing our write result.
         """
-        collection = self.db.get_collection(self.collection_name)
-        date_obj = datetime.datetime.strptime(date, "%Y-%m-%d")
+        self.logger.info("Inserting %d documents into %s collection",
+                         len(documents), self.collection_name)
+
+        return self.collection.insert_many(documents)
+
+    def get_one_document_by_date(self, date: datetime) -> Dict:
+        """
+        Retrieves one document from the specified collection of covid-19 db
+        by date key.
+
+        :param date: Datetime object representing date to query by.
+        :return: Dict representing document matching date, if any.
+        """
         self.logger.info("Retrieving documents by date %s.", date)
-        result = collection.find_one(
-            {"date": {"$eq": date_obj}},
+
+        return self.collection.find_one(
+            {"date": {"$eq": date}},
             {"_id": False}
         )
 
-        return result if result else {"not found": "no data for that date"}
-
     def get_all_dates_by_country(self, country: str) -> List:
         """
-        todo
-        :return:
+        Retrieves multiple documents from the specified collection of covid-19 db
+        by country.
+
+        :return: CommandCursor iterator of matching documents.
         """
-        # filter by country and return the date, confirmed, recovered and deaths
         pipeline = [
             {'$project': {
                 'cases': {'$filter': {
@@ -78,6 +84,4 @@ class MongoDAO:
                 '_id': 0}}
         ]
 
-        collection = self.db.get_collection("dates")
-        result = collection.aggregate(pipeline=pipeline)
-        return list(filter(lambda d: d["cases"], result))
+        return self.collection.aggregate(pipeline=pipeline)

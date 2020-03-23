@@ -18,7 +18,7 @@ class CSVRequester:
     todo
     """
     config: dict = app.config
-    new_data = {}
+    new_data: dict = {}
 
     def __init__(self):
         self.logger = build_logger("CSVRequester")
@@ -34,6 +34,25 @@ class CSVRequester:
         :return:
         """
         return self._get_urls()
+
+    def request_new_csv(self, url: str, github_filename: str) -> Dict:
+        """
+        Checks our list of csv files against those available in
+        the COVID-19 repo and identify any new ones to download.
+
+        :return: Dict of new csv filename as key with data as value
+        """
+        new_data = {}
+        if github_filename not in self.current_dates:
+            self.logger.info("New data for %s. Downloading...", github_filename)
+            response = requests.get(url).content.decode("utf-8-sig")
+            data = csv.DictReader(response.splitlines())
+            new_data[github_filename.split(".")[0]] = data
+            self._write_new_date_to_file(github_filename)
+        else:
+            self.logger.info("Already have %s data.", github_filename)
+
+        return new_data
 
     def _get_urls(self) -> Set:
         """
@@ -60,20 +79,12 @@ class CSVRequester:
         """
         return BeautifulSoup(requests.get(self.repo_url).content, "lxml")
 
-    def request_new_csv(self, url: str, github_filename: str) -> Dict:
+    def _write_new_date_to_file(self, date: str):
         """
-        Checks our list of csv files against those available in
-        the COVID-19 repo and identify any new ones to download.
+        Append the date to the file of downloaded date files.
 
-        :return: Dict of new csv filename as key with data as value
+        :param date: String of date
         """
-        new_data = {}
-        if github_filename not in self.current_dates:
-            self.logger.info("New data for %s. Downloading...", github_filename)
-            response = requests.get(url).content.decode("utf-8-sig")
-            data = csv.DictReader(response.splitlines())
-            new_data[github_filename.split(".")[0]] = data
-        else:
-            self.logger.info("Already have %s data.", github_filename)
-
-        return new_data
+        with open(Path(self.config["directories"]["currentDatesFile"]),
+                  "a") as file_obj:
+            file_obj.write(date + "\n")

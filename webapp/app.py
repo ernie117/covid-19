@@ -5,6 +5,7 @@ from flask import Flask, render_template, jsonify
 
 from webapp.csv import etl_functions
 from webapp.etl.mongo_dao import MongoDAO
+from webapp.services.dates_service import DatesService
 from webapp.utils.utils import purge_images, get_countries
 
 app = Flask(__name__)
@@ -28,12 +29,12 @@ def home(country: str):
 
 @app.route("/api/date/<date>")
 def json_for_date(date: str):
-    return jsonify(MongoDAO("dates").get_one_document_by_date(date))
+    return jsonify(DatesService().get_single_date(date))
 
 
 @app.route("/api/country/<country>")
 def json_for_country(country: str):
-    return jsonify(MongoDAO("dates").get_all_dates_by_country(country))
+    return jsonify(DatesService().get_dates_data(country))
 
 
 if __name__ == "__main__":

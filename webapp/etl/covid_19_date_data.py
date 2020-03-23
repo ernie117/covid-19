@@ -6,19 +6,19 @@ objects organised by date and loaded into mongoDB.
 
 from webapp.etl.csv_date_transformer import CSVDateTransformer
 from webapp.etl.csv_requester import CSVRequester
-from webapp.etl.mongo_dao import MongoDAO
+from webapp.services.dates_service import DatesService
 
 
-class Covid19DateDataETL:
+class Covid19DateDataRTL:
     """
     todo
     """
     date_documents = []
-    dao = MongoDAO("dates")
+    dates_service = DatesService()
     csv_requester = CSVRequester()
     csv_date_transformer = CSVDateTransformer()
 
-    def execute_etl(self):
+    def execute_rtl(self):
         """
         todo
         """
@@ -54,4 +54,4 @@ class Covid19DateDataETL:
         todo
         :return:
         """
-        self.dao.insert_many_documents(self.date_documents)
+        self.dates_service.insert_multiple_dates(self.date_documents)
