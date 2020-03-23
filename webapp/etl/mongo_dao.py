@@ -11,6 +11,8 @@ from pymongo.results import InsertManyResult, InsertOneResult
 
 from webapp.loggers.loggers import build_logger
 
+LOGGER = build_logger("DocumentConverter")
+
 
 class MongoDAO:
     """
@@ -22,7 +24,6 @@ class MongoDAO:
     db = client.get_database("covid-19")
 
     def __init__(self, collection_name: str):
-        self.logger = build_logger("MongoDAO")
         self.collection_name = collection_name
         self.collection = self.db.get_collection(
             collection_name, write_concern=WriteConcern(w=1)
@@ -35,7 +36,7 @@ class MongoDAO:
         :param document: Dict representing document to be persisted.
         :return: InsertOneResult representing our write result.
         """
-        self.logger.info("Inserting one document in %s.", self.collection_name)
+        LOGGER.info("Inserting one document in %s.", self.collection_name)
 
         return self.collection.insert_one(document)
 
@@ -46,7 +47,7 @@ class MongoDAO:
         :param documents: Multiple dicts representing documents to be persisted.
         :return: InsertManyResult representing our write result.
         """
-        self.logger.info("Inserting %d documents into %s collection",
+        LOGGER.info("Inserting %d documents into %s collection",
                          len(documents), self.collection_name)
 
         return self.collection.insert_many(documents)
@@ -59,7 +60,7 @@ class MongoDAO:
         :param date: Datetime object representing date to query by.
         :return: Dict representing document matching date, if any.
         """
-        self.logger.info("Retrieving documents by date %s.", date)
+        LOGGER.info("Retrieving documents by date %s.", date)
 
         return self.collection.find_one(
             {"date": {"$eq": date}},
@@ -73,6 +74,8 @@ class MongoDAO:
 
         :return: CommandCursor iterator of matching documents.
         """
+        LOGGER.info("Retrieving multiple dates for %s by aggregate.",
+                         country)
         pipeline = [
             {'$project': {
                 'cases': {'$filter': {

@@ -8,6 +8,8 @@ from typing import Dict, List
 from webapp.etl.mongo_dao import MongoDAO
 from webapp.loggers.loggers import build_logger
 
+LOGGER = build_logger("DocumentConverter")
+
 
 class DatesService:
     """
@@ -16,7 +18,6 @@ class DatesService:
 
     def __init__(self):
         self.mongo_dao = MongoDAO("dates")
-        self.logger = build_logger("DatesService")
 
     def get_dates_data(self, country: str) -> List[Dict]:
         """
@@ -25,7 +26,7 @@ class DatesService:
         :return:
         """
         data = list(self.mongo_dao.get_all_dates_by_country(country))
-        self.logger.info("Retrieved %d date documents.", len(data))
+        LOGGER.info("Retrieved %d date documents.", len(data))
 
         return list(filter(lambda d: d["cases"], data))
 
@@ -47,14 +48,14 @@ class DatesService:
         :return:
         """
         if not dates:
-            self.logger.info("No Documents to insert!")
+            LOGGER.info("No Documents to insert!")
             return
 
         result = self.mongo_dao.insert_many_documents(dates)
         if result.acknowledged:
-            self.logger.info("Documents inserted successfully!")
+            LOGGER.info("Documents inserted successfully!")
         else:
-            self.logger.info("Documents not inserted!")
+            LOGGER.info("Documents not inserted!")
 
         return result if result else None
 

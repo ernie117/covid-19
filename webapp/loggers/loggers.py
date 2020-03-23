@@ -1,8 +1,13 @@
 import logging
 import sys
 
+LOGGERS = {}
+
 
 def build_logger(name: str):
+    if LOGGERS.get(name):
+        return LOGGERS.get(name)
+
     logger = logging.getLogger(name)
     logger.setLevel(level=logging.INFO)
     formatter = logging.Formatter(
@@ -11,5 +16,6 @@ def build_logger(name: str):
     handler.setLevel(level=logging.INFO)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+    LOGGERS[name] = logger
 
     return logger

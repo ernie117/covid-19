@@ -5,6 +5,8 @@ from pandas import DataFrame
 
 from webapp.loggers.loggers import build_logger
 
+LOGGER = build_logger("DocumentConverter")
+
 
 class DocumentConverter:
     """
@@ -13,7 +15,6 @@ class DocumentConverter:
 
     def __init__(self, data: List[Dict]):
         self.data = data
-        self.logger = build_logger("DocumentConverter")
 
     def convert_dates_to_dataframe(self):
         """
@@ -35,7 +36,7 @@ class DocumentConverter:
             temp_dict["recovered"].append(cases["recovered"])
             temp_dict["deaths"].append(cases["deaths"])
 
-        self.logger.info("Converting data to dataframe.")
+        LOGGER.info("Converting data to dataframe.")
         dataframe = DataFrame(data=temp_dict)
         dataframe["dates"] = pandas.to_datetime(dataframe["dates"])
         dataframe["dates"] = dataframe["dates"].dt.strftime("%m-%d")
