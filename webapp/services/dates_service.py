@@ -1,8 +1,9 @@
 """
-Contains the class acting as intermediary between Mongo dates collection and
+Contains the class acting as intermediary between the Mongo dates collection and
 calling code.
 """
 import datetime
+from typing import Dict, List
 
 from webapp.etl.mongo_dao import MongoDAO
 from webapp.loggers.loggers import build_logger
@@ -17,13 +18,13 @@ class DatesService:
         self.mongo_dao = MongoDAO("dates")
         self.logger = build_logger("DatesService")
 
-    def get_dates_data(self, country: str):
+    def get_dates_data(self, country: str) -> List[Dict]:
         """
         todo
         :param country:
         :return:
         """
-        data = self.mongo_dao.get_all_dates_by_country(country)
+        data = list(self.mongo_dao.get_all_dates_by_country(country))
         self.logger.info("Retrieved %d date documents.", len(data))
 
         return list(filter(lambda d: d["cases"], data))

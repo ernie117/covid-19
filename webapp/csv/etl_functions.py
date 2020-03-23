@@ -6,8 +6,8 @@ from typing import Dict
 import pandas
 from pandas import DataFrame
 
-from webapp.csv.plotting import build_line_plot, set_seaborn_features
 from webapp.etl.country_transformer import CountryTransformer
+from webapp.services.plotting import SeabornPlotter
 
 
 def get_dates(dataframe: DataFrame) -> list:
@@ -106,5 +106,6 @@ def main(country: str):
     data = read_csv_files_to_dict(country)
     dataframe = data_to_dataframe(data)
     dates = get_dates(dataframe)
-    set_seaborn_features()
-    build_line_plot(dataframe, country, dates)
+    plotter = SeabornPlotter(dataframe)
+    plotter.set_seaborn_features()
+    plotter.build_line_plot(country, dates)

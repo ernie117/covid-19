@@ -3,9 +3,9 @@ from pathlib import Path
 import yaml
 from flask import Flask, render_template, jsonify
 
-from webapp.csv import etl_functions
-from webapp.etl.mongo_dao import MongoDAO
+from webapp.etl.document_to_dataframe import DocumentConverter
 from webapp.services.dates_service import DatesService
+from webapp.services.plotting import SeabornPlotter
 from webapp.utils.utils import purge_images, get_countries
 
 app = Flask(__name__)
@@ -20,7 +20,11 @@ with open(Path("config/config.yml"), "r") as f:
 def home(country: str):
     purge_images()
 
-    etl_functions.main(country.lower())
+    converter = DocumentConverter(DatesService().get_dates_data(country))
+    data = converter.convert_dates_to_dataframe()
+    plotter = SeabornPlotter(data)
+    plotter.set_seaborn_features()
+    plotter.build_line_plot(country)
 
     return render_template("country.html",
                            country=country,

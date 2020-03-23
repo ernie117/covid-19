@@ -6,6 +6,7 @@ import datetime
 from typing import Dict, List
 
 from pymongo import MongoClient, WriteConcern
+from pymongo.command_cursor import CommandCursor
 from pymongo.results import InsertManyResult, InsertOneResult
 
 from webapp.loggers.loggers import build_logger
@@ -65,7 +66,7 @@ class MongoDAO:
             {"_id": False}
         )
 
-    def get_all_dates_by_country(self, country: str) -> List:
+    def get_all_dates_by_country(self, country: str) -> CommandCursor:
         """
         Retrieves multiple documents from the specified collection of covid-19 db
         by country.
