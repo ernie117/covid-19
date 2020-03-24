@@ -11,7 +11,7 @@ td {
     text-align: center;
     background-color: white;
     border-bottom: 1px solid #ddd;
-    font-family: "IBM Plex Mono SemiBold", Arial, sans-serif;
+    font-family: "IBM Plex Mono Medium", Arial, sans-serif;
     margin: 5px;
 }
 
@@ -35,7 +35,7 @@ th {
 
 .my-header {
     text-align: center;
-    font-family: "IBM Plex Serif Bold", Arial, sans-serif;
+    font-family: "IBM Plex Serif Medium", Arial, sans-serif;
     text-decoration: underline;
 }
 
@@ -79,4 +79,5 @@ th {
     height: 760px;
     overflow-y: auto;
     box-shadow: 5px 5px 5px #696969;
+    font-family: "IBM Plex Mono SemiBold", Arial, sans-serif;
 }

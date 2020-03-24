@@ -51,7 +51,7 @@ class SeabornLinePlotter:
                               data=self.dataframe)
 
         font = {
-            "family": "IBM Plex Mono Medium",
+            "family": "IBM Plex Mono",
             "color": "black",
             "weight": "normal",
             "size": 14,

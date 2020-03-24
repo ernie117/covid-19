@@ -26,9 +26,14 @@ def get_countries():
                           "r") as f:
                     data = csv.DictReader(f)
                     for thing in data:
-                        if thing["Country/Region"] in filter_countries:
-                            continue
-                        countries.append(thing["Country/Region"])
+                        try:
+                            if thing["Country/Region"] in filter_countries:
+                                continue
+                            countries.append(thing["Country/Region"])
+                        except KeyError:
+                            if thing["Country_Region"] in filter_countries:
+                                continue
+                            countries.append(thing["Country_Region"])
 
     return sorted({CountryTransformer(country).transform()
                    for country in countries})
