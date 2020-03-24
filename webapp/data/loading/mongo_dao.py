@@ -11,7 +11,7 @@ from pymongo.results import InsertManyResult, InsertOneResult
 
 from webapp.loggers.loggers import build_logger
 
-LOGGER = build_logger("DocumentConverter")
+LOGGER = build_logger("MongoDAO")
 
 
 class MongoDAO:
@@ -48,7 +48,7 @@ class MongoDAO:
         :return: InsertManyResult representing our write result.
         """
         LOGGER.info("Inserting %d documents into %s collection",
-                         len(documents), self.collection_name)
+                    len(documents), self.collection_name)
 
         return self.collection.insert_many(documents)
 
@@ -75,7 +75,7 @@ class MongoDAO:
         :return: CommandCursor iterator of matching documents.
         """
         LOGGER.info("Retrieving multiple dates for %s by aggregate.",
-                         country)
+                    country)
         pipeline = [
             {'$project': {
                 'cases': {'$filter': {

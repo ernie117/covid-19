@@ -1,10 +1,11 @@
 """
-todo
+Contains the class for transforming covid-19 CSV data from github into a
+document structure suitable for MongoDB.
 """
 import datetime
 from typing import List, Dict
 
-from webapp.etl.country_transformer import CountryTransformer
+from webapp.data.transformation.country_transformer import CountryTransformer
 from webapp.loggers.loggers import build_logger
 
 
@@ -13,7 +14,13 @@ class CSVDateTransformer:
     Class containing all logic required to transform CSV data from GitHub into
     custom dictionary objects representing documents to be persisted in Mongo.
     """
-    COUNTRY_REGION: str = "Country/Region"
+    # These have changed in the past so making them constants here means
+    # future breaking changes to the CSVs are easily fixed
+    COUNTRY_REGION: str = "Country_Region"
+    PROVINCE_STATE: str = "Province_State"
+    CONFIRMED: str = "Confirmed"
+    RECOVERED: str = "Recovered"
+    DEATHS: str = "Deaths"
     COUNTRY_REGION_LC: str = "country/region"
 
     def __init__(self):
@@ -36,9 +43,10 @@ class CSVDateTransformer:
     def _create_custom_dicts(self, dictreader) -> List[Dict]:
         """
         Create an intermediate structure for transformation. The structure of
-        dicts in the DictReader is altered to dicts with custom keys. Also
-        transforms country names to preferred/consistent names. Dicts are
-        returned in a list sorted alphabetically by country.
+        dicts in the DictReader is altered to dicts with custom keys, removing
+        excluding latitude, longitude, last update and others. Also transforms
+        country names to preferred/consistent names. Dicts are returned in a list
+        sorted alphabetically by country.
 
         Example resulting dict:
         {
@@ -60,7 +68,7 @@ class CSVDateTransformer:
 
             new_dicts.append({
                 self.COUNTRY_REGION_LC: dictionary[self.COUNTRY_REGION],
-                "province/state": dictionary["Province/State"],
+                "province/state": dictionary[self.PROVINCE_STATE],
                 "confirmed": dictionary["Confirmed"],
                 "recovered": dictionary["Recovered"],
                 "deaths": dictionary["Deaths"]

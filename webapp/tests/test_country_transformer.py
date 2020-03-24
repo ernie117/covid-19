@@ -1,6 +1,6 @@
 import unittest
 
-from webapp.etl.country_transformer import CountryTransformer
+from webapp.data.transformation.country_transformer import CountryTransformer
 
 
 class TestCountryTransformer(unittest.TestCase):

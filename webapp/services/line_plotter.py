@@ -1,3 +1,6 @@
+"""
+Contains a class for the customizing and building of a Seaborn lineplot.
+"""
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -8,7 +11,11 @@ from pandas import DataFrame
 from webapp.loggers.loggers import build_logger
 
 
-class SeabornPlotter:
+class SeabornLinePlotter:
+    """
+    Class containing the functionality to set up preferred Seaborn colouring and
+    styles, and build a lineplot from provided data.
+    """
 
     def __init__(self, dataframe: DataFrame):
         self.dataframe = dataframe
@@ -17,7 +24,7 @@ class SeabornPlotter:
     @staticmethod
     def set_seaborn_features():
         """
-        todo
+        Set preferred styling and palette for Seaborn plot.
         """
         sns.set_style("whitegrid")
         sns.set_context("talk")

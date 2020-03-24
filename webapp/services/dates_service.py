@@ -5,10 +5,10 @@ calling code.
 import datetime
 from typing import Dict, List
 
-from webapp.etl.mongo_dao import MongoDAO
+from webapp.data.loading.mongo_dao import MongoDAO
 from webapp.loggers.loggers import build_logger
 
-LOGGER = build_logger("DocumentConverter")
+LOGGER = build_logger("DatesService")
 
 
 class DatesService:

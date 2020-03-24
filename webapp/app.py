@@ -3,9 +3,9 @@ from pathlib import Path
 import yaml
 from flask import Flask, render_template, jsonify
 
-from webapp.etl.document_to_dataframe import DocumentConverter
+from webapp.data.transformation.document_to_dataframe import DocumentConverter
 from webapp.services.dates_service import DatesService
-from webapp.services.plotting import SeabornPlotter
+from webapp.services.line_plotter import SeabornLinePlotter
 from webapp.utils.utils import purge_images, get_countries
 
 app = Flask(__name__)
@@ -22,7 +22,7 @@ def home(country: str):
 
     converter = DocumentConverter(DatesService().get_dates_data(country))
     data = converter.convert_dates_to_dataframe()
-    plotter = SeabornPlotter(data)
+    plotter = SeabornLinePlotter(data)
     plotter.set_seaborn_features()
     plotter.build_line_plot(country)
 

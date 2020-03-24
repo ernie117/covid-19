@@ -1,7 +1,7 @@
 """
 todo
 """
-from .country_mapper import country_map
+from .country_map import country_map
 
 
 class CountryTransformer:

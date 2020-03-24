@@ -1,5 +1,5 @@
 """
-todo
+Contains a class responsible for requesting new CSV covid-19 data.
 """
 import csv
 import re
@@ -9,13 +9,14 @@ from typing import Dict, Set
 import requests
 from bs4 import BeautifulSoup
 
-from ..app import app
-from ..loggers.loggers import build_logger
+from webapp.app import app
+from webapp.loggers.loggers import build_logger
 
 
 class CSVRequester:
     """
-    todo
+    Class containing the functionality to check for new CSV data, request it,
+    and write it to file should it be downloaded.
     """
     config: dict = app.config
     new_data: dict = {}
@@ -30,7 +31,9 @@ class CSVRequester:
 
     def check_for_new_csv(self):
         """
-        todo
+        Retrieves list of urls and filenames from GitHub to eventually compare
+        against already downloaded data.
+
         :return:
         """
         return self._get_urls()
@@ -48,6 +51,9 @@ class CSVRequester:
             response = requests.get(url).content.decode("utf-8-sig")
             data = csv.DictReader(response.splitlines())
             new_data[github_filename.split(".")[0]] = data
+            self._write_new_csv_to_file(
+                github_filename,
+                new_data[github_filename.split(".")[0]])
             self._write_new_date_to_file(github_filename)
         else:
             self.logger.info("Already have %s data.", github_filename)
@@ -88,3 +94,19 @@ class CSVRequester:
         with open(Path(self.config["directories"]["currentDatesFile"]),
                   "a") as file_obj:
             file_obj.write(date + "\n")
+
+    def _write_new_csv_to_file(self, date: str, data: csv.DictReader):
+        """
+        Writes newly downloaded CSV data to a CSV file.
+
+        :param date: String date to be used as the filename.
+        :param data: DictReader of dicts representing CSV data.
+        :return:
+        """
+        with open(Path("webapp/COVID-19-data/" + date), "w",
+                  encoding="utf-8",
+                  newline="") as file_obj:
+            writer = csv.DictWriter(file_obj, fieldnames=data.fieldnames)
+            writer.writeheader()
+            writer.writerows(data)
+            self.logger.info("%s file written!", date)
