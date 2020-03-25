@@ -5,6 +5,8 @@ objects organised by date and loaded into mongoDB.
 """
 from typing import Dict
 
+from pymongo.results import InsertManyResult
+
 from webapp.data.requesting.csv_requester import CSVRequester
 from webapp.data.transformation.csv_date_transformer import CSVDateTransformer
 from webapp.loggers.loggers import build_logger
@@ -22,7 +24,7 @@ class Covid19DateDataRTL:
     csv_requester = CSVRequester()
     csv_date_transformer = CSVDateTransformer()
 
-    def execute_rtl(self) -> None:
+    def execute_rtl(self) -> str:
         """
         Entry point for the class.
         """
@@ -36,7 +38,9 @@ class Covid19DateDataRTL:
             self._transform(requested_data)
 
         self.logger.info("Loading new transformed data.")
-        self._load()
+        result = self._load()
+        if result and result.acknowledged:
+            return "Data updated!"
 
     def _request(self, url: str, filename: str) -> Dict:
         """
@@ -54,8 +58,8 @@ class Covid19DateDataRTL:
         if transformed_data:
             self.date_documents.extend(transformed_data)
 
-    def _load(self):
+    def _load(self) -> InsertManyResult:
         """
         Persists new date data as MongoDB documents in covid-19 db.
         """
-        self.dates_service.insert_multiple_dates(self.date_documents)
+        return self.dates_service.insert_multiple_dates(self.date_documents)

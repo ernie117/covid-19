@@ -7,6 +7,7 @@ from typing import Dict, List
 
 from pymongo import MongoClient, WriteConcern
 from pymongo.command_cursor import CommandCursor
+from pymongo.cursor import Cursor
 from pymongo.results import InsertManyResult, InsertOneResult
 
 from webapp.loggers.loggers import build_logger
@@ -89,3 +90,11 @@ class MongoDAO:
         ]
 
         return self.collection.aggregate(pipeline=pipeline)
+
+    def get_all(self) -> Cursor:
+        """
+        Sometimes you just need everything.
+
+        :return: Iterator over all documents.
+        """
+        return self.collection.find()

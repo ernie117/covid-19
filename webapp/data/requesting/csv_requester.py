@@ -1,15 +1,16 @@
 """
 Contains a class responsible for requesting new CSV covid-19 data.
 """
+import copy
 import csv
 import re
 from pathlib import Path
-from typing import Dict, Set
+from typing import Dict, Set, List
 
 import requests
+import yaml
 from bs4 import BeautifulSoup
 
-from webapp.app import app
 from webapp.loggers.loggers import build_logger
 
 
@@ -18,7 +19,10 @@ class CSVRequester:
     Class containing the functionality to check for new CSV data, request it,
     and write it to file should it be downloaded.
     """
-    config: dict = app.config
+    config: dict
+    with open(Path("config/config.yml"), "r") as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+
     new_data: dict = {}
 
     def __init__(self):
@@ -49,14 +53,15 @@ class CSVRequester:
         if github_filename not in self.current_dates:
             self.logger.info("New data for %s. Downloading...", github_filename)
             response = requests.get(url).content.decode("utf-8-sig")
-            data = csv.DictReader(response.splitlines())
-            new_data[github_filename.split(".")[0]] = data
             self._write_new_csv_to_file(
                 github_filename,
-                new_data[github_filename.split(".")[0]])
+                response)
+            data = csv.DictReader(response.splitlines())
+            new_data[github_filename.split(".")[0]] = data
             self._write_new_date_to_file(github_filename)
         else:
-            self.logger.info("Already have %s data.", github_filename)
+            # self.logger.info("Already have %s data.", github_filename)
+            pass
 
         return new_data
 
@@ -95,7 +100,7 @@ class CSVRequester:
                   "a") as file_obj:
             file_obj.write(date + "\n")
 
-    def _write_new_csv_to_file(self, date: str, data: csv.DictReader):
+    def _write_new_csv_to_file(self, date: str, data: str):
         """
         Writes newly downloaded CSV data to a CSV file.
 
@@ -103,10 +108,9 @@ class CSVRequester:
         :param data: DictReader of dicts representing CSV data.
         :return:
         """
-        with open(Path("webapp/COVID-19-data/" + date), "w",
-                  encoding="utf-8",
-                  newline="") as file_obj:
-            writer = csv.DictWriter(file_obj, fieldnames=data.fieldnames)
-            writer.writeheader()
-            writer.writerows(data)
+        with open(Path("webapp/COVID-19-data/" + date), "w") as file_obj:
+            writer = csv.writer(file_obj)
+            for line in data.splitlines():
+                writer.writerow([line.replace("\"", "")])
+
             self.logger.info("%s file written!", date)
