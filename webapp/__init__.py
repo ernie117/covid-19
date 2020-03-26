@@ -1,16 +1,15 @@
 from flask import Flask
 
 from config.flask_config import DevConfig
-from . import routes
 
 
 def create_app():
     app = Flask(__name__)
+    app.config.from_object(DevConfig())
 
     with app.app_context():
-        app.config.from_object(DevConfig())
-        from . import routes
+        from .routes import data_page
 
-        app.register_blueprint(routes.data_page)
+        app.register_blueprint(data_page)
 
-        return app
+    return app

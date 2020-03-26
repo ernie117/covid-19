@@ -8,7 +8,7 @@ from typing import Dict, Set
 
 import requests
 from bs4 import BeautifulSoup
-from config.flask_config import DevConfig
+from flask import current_app
 
 from webapp.loggers.loggers import build_logger
 
@@ -22,10 +22,10 @@ class CSVRequester:
 
     def __init__(self):
         self.logger = build_logger("CSVRequester")
-        self.repo_url = DevConfig.GIT_COVID_REPO_URL
-        self.root_url = DevConfig.GITHUB_RAW_ROOT_URL
-        with open(Path(DevConfig.CURRENT_DATES_FILE), "r") as file_obj:
-            self.current_dates = file_obj.read().splitlines()
+        self.repo_url = current_app.config["GIT_COVID_REPO_URL"]
+        self.root_url = current_app.config["GITHUB_RAW_ROOT_URL"]
+        with open(Path(current_app.config["CURRENT_DATES_FILE"]), "r") as f_obj:
+            self.current_dates = f_obj.read().splitlines()
 
     def check_for_new_csv(self):
         """
@@ -55,7 +55,6 @@ class CSVRequester:
             self._write_new_date_to_file(github_filename)
         else:
             self.logger.info("Already have %s data.", github_filename)
-            pass
 
         return new_data
 

@@ -10,7 +10,6 @@ from webapp.utils.utils import purge_images
 
 DATES_SERVICE = DatesService()
 COUNTRIES_SERVICE = CountriesService()
-CSV_REQUESTER = CSVRequester()
 
 data_page = Blueprint("data", __name__)
 
