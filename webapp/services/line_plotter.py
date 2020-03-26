@@ -27,7 +27,7 @@ class SeabornLinePlotter:
         Set preferred styling and palette for Seaborn plot.
         """
         sns.set_style("whitegrid")
-        sns.set_context("talk")
+        sns.set_context("poster")
         sns.set_palette("colorblind")
 
     def build_line_plot(self, country: str) -> None:

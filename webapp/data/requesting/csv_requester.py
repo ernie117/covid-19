@@ -1,11 +1,10 @@
 """
 Contains a class responsible for requesting new CSV covid-19 data.
 """
-import copy
 import csv
 import re
 from pathlib import Path
-from typing import Dict, Set, List
+from typing import Dict, Set
 
 import requests
 import yaml
@@ -60,7 +59,7 @@ class CSVRequester:
             new_data[github_filename.split(".")[0]] = data
             self._write_new_date_to_file(github_filename)
         else:
-            # self.logger.info("Already have %s data.", github_filename)
+            self.logger.info("Already have %s data.", github_filename)
             pass
 
         return new_data

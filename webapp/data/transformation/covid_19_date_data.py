@@ -37,6 +37,9 @@ class Covid19DateDataRTL:
             requested_data = self._request(url, file)
             self._transform(requested_data)
 
+        if not self.date_documents:
+            return "No new data!"
+
         self.logger.info("Loading new transformed data.")
         result = self._load()
         if result and result.acknowledged:
