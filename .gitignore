@@ -1,6 +1,6 @@
 /venv
 /.idea
 __pycache__/
-webapp/config/
+config/
 webapp/static/images
 gitignore

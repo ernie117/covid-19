@@ -1,6 +1,7 @@
-from flask import Flask, render_template, jsonify
+from flask import render_template, jsonify, Blueprint
 
 from webapp.data.extraction.countries_service import CountriesService
+from webapp.data.requesting.csv_requester import CSVRequester
 from webapp.data.transformation.covid_19_date_data import Covid19DateDataRTL
 from webapp.data.transformation.document_to_dataframe import DocumentConverter
 from webapp.services.dates_service import DatesService
@@ -9,11 +10,12 @@ from webapp.utils.utils import purge_images
 
 DATES_SERVICE = DatesService()
 COUNTRIES_SERVICE = CountriesService()
+CSV_REQUESTER = CSVRequester()
 
-app = Flask(__name__)
+data_page = Blueprint("data", __name__)
 
 
-@app.route("/<country>")
+@data_page.route("/<country>")
 def home(country: str):
     purge_images()
 
@@ -25,32 +27,24 @@ def home(country: str):
 
     return render_template("country.html",
                            country=country,
-                           countries=get_countries())
+                           countries=COUNTRIES_SERVICE.get_latest_countries())
 
 
-@app.route("/function/update")
+@data_page.route("/function/update")
 def update():
     return Covid19DateDataRTL().execute_rtl()
 
 
-@app.route("/api/date/<date>")
+@data_page.route("/api/date/<date>")
 def json_for_date(date: str):
     return jsonify(DATES_SERVICE.get_single_date(date))
 
 
-@app.route("/api/country/<country>")
+@data_page.route("/api/country/<country>")
 def json_for_country(country: str):
     return jsonify(DATES_SERVICE.get_dates_data(country))
 
 
-@app.route("/countries")
+@data_page.route("/countries")
 def get_latest_countries():
-    return jsonify(get_countries())
-
-
-def get_countries():
-    return COUNTRIES_SERVICE.get_latest_countries()
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
+    return jsonify(COUNTRIES_SERVICE.get_latest_countries())

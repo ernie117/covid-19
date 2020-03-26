@@ -7,8 +7,8 @@ from pathlib import Path
 from typing import Dict, Set
 
 import requests
-import yaml
 from bs4 import BeautifulSoup
+from config.flask_config import DevConfig
 
 from webapp.loggers.loggers import build_logger
 
@@ -18,18 +18,13 @@ class CSVRequester:
     Class containing the functionality to check for new CSV data, request it,
     and write it to file should it be downloaded.
     """
-    config: dict
-    with open(Path("config/config.yml"), "r") as f:
-        config = yaml.load(f, Loader=yaml.FullLoader)
-
     new_data: dict = {}
 
     def __init__(self):
         self.logger = build_logger("CSVRequester")
-        self.repo_url = self.config["URLs"]["githubCovid19RepoURL"]
-        self.root_url = self.config["URLs"]["githubRawRootURL"]
-        with open(Path(self.config["directories"]["currentDatesFile"]),
-                  "r") as file_obj:
+        self.repo_url = DevConfig.GIT_COVID_REPO_URL
+        self.root_url = DevConfig.GITHUB_RAW_ROOT_URL
+        with open(Path(DevConfig.CURRENT_DATES_FILE), "r") as file_obj:
             self.current_dates = file_obj.read().splitlines()
 
     def check_for_new_csv(self):
