@@ -2,6 +2,7 @@
 Contains a class responsible for requesting new CSV covid-19 data.
 """
 import csv
+import glob
 import re
 from pathlib import Path
 from typing import Dict, Set
@@ -24,15 +25,13 @@ class CSVRequester:
         self.logger = build_logger("CSVRequester")
         self.repo_url = current_app.config["GIT_COVID_REPO_URL"]
         self.root_url = current_app.config["GITHUB_RAW_ROOT_URL"]
-        with open(Path(current_app.config["CURRENT_DATES_FILE"]), "r") as f_obj:
-            self.current_dates = f_obj.read().splitlines()
 
-    def check_for_new_csv(self):
+    def check_for_new_csv(self) -> Set:
         """
         Retrieves list of urls and filenames from GitHub to eventually compare
         against already downloaded data.
 
-        :return:
+        :return: a Set of URLs and filenames
         """
         return self._get_urls()
 
@@ -44,7 +43,8 @@ class CSVRequester:
         :return: Dict of new csv filename as key with data as value
         """
         new_data = {}
-        if github_filename not in self.current_dates:
+        files = [p.name for p in Path("webapp/COVID-19-data/").glob("*.csv")]
+        if github_filename not in files:
             self.logger.info("New data for %s. Downloading...", github_filename)
             response = requests.get(url).content.decode("utf-8-sig")
             self._write_new_csv_to_file(
@@ -53,8 +53,6 @@ class CSVRequester:
             data = csv.DictReader(response.splitlines())
             new_data[github_filename.split(".")[0]] = data
             self._write_new_date_to_file(github_filename)
-        else:
-            self.logger.info("Already have %s data.", github_filename)
 
         return new_data
 
@@ -89,9 +87,10 @@ class CSVRequester:
 
         :param date: String of date
         """
-        with open(Path(self.config["directories"]["currentDatesFile"]),
-                  "a") as file_obj:
-            file_obj.write(date + "\n")
+        with open(Path(current_app.config["CURRENT_DATES_FILE"]), "a") as f_obj:
+            f_obj.write(date + "\n")
+
+        self.logger.info("New date added to current dates file!")
 
     def _write_new_csv_to_file(self, date: str, data: str):
         """
@@ -103,7 +102,8 @@ class CSVRequester:
         """
         with open(Path("webapp/COVID-19-data/" + date), "w") as file_obj:
             writer = csv.writer(file_obj)
-            for line in data.splitlines():
-                writer.writerow([line.replace("\"", "")])
+            reader = csv.reader(data.splitlines())
+            for line in reader:
+                writer.writerow(line)
 
-            self.logger.info("%s file written!", date)
+        self.logger.info("%s file written!", date)

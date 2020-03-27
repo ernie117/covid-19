@@ -14,10 +14,10 @@ class CSVDateTransformer:
     Class containing all logic required to transform CSV data from GitHub into
     custom dictionary objects representing documents to be persisted in Mongo.
     """
-    # These have changed in the past so making them constants here means
-    # future breaking changes to the CSVs are easily fixed
     COUNTRY_REGION: str = "Country_Region"
+    COUNTRY_REGION_OLD: str = "Country/Region"
     PROVINCE_STATE: str = "Province_State"
+    PROVINCE_STATE_OLD: str = "Province/State"
     CONFIRMED: str = "Confirmed"
     RECOVERED: str = "Recovered"
     DEATHS: str = "Deaths"
@@ -61,17 +61,24 @@ class CSVDateTransformer:
         :return: list of custom dicts sorted alphabetically by country
         """
         new_dicts = []
-        for dictionary in dictreader:
-            country = dictionary[self.COUNTRY_REGION]
+        for row in dictreader:
+            try:
+                country = row[self.COUNTRY_REGION]
+                province = row[self.PROVINCE_STATE]
+            except KeyError:
+                # Older documents have different keys
+                country = row[self.COUNTRY_REGION_OLD]
+                province = row[self.PROVINCE_STATE_OLD]
+
             country_transformer = CountryTransformer(country)
-            dictionary[self.COUNTRY_REGION] = country_transformer.transform()
+            custom_country = country_transformer.transform()
 
             new_dicts.append({
-                self.COUNTRY_REGION_LC: dictionary[self.COUNTRY_REGION],
-                "province/state": dictionary[self.PROVINCE_STATE],
-                "confirmed": dictionary["Confirmed"],
-                "recovered": dictionary["Recovered"],
-                "deaths": dictionary["Deaths"]
+                self.COUNTRY_REGION_LC: custom_country,
+                "province/state": province,
+                "confirmed": row["Confirmed"],
+                "recovered": row["Recovered"],
+                "deaths": row["Deaths"]
             })
 
         return sorted(new_dicts, key=lambda d: d[self.COUNTRY_REGION_LC])
