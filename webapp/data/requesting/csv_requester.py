@@ -100,7 +100,8 @@ class CSVRequester:
         :param data: DictReader of dicts representing CSV data.
         :return:
         """
-        with open(Path("webapp/COVID-19-data/" + date), "w") as file_obj:
+        with open(Path("webapp/COVID-19-data/" + date), "w",
+                  newline="") as file_obj:
             writer = csv.writer(file_obj)
             reader = csv.reader(data.splitlines())
             for line in reader:
