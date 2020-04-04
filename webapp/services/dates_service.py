@@ -3,7 +3,9 @@ Contains the class acting as intermediary between the Mongo dates collection and
 calling code.
 """
 import datetime
-from typing import Dict, List
+from typing import Dict, List, Optional
+
+from pymongo.results import InsertManyResult
 
 from webapp.data.loading.mongo_dao import MongoDAO
 from webapp.loggers.loggers import build_logger
@@ -13,7 +15,8 @@ LOGGER = build_logger("DatesService")
 
 class DatesService:
     """
-    todo
+    Acts as intermediary service layer between a MongoDAO and calling code at
+    the view layer.
     """
 
     def __init__(self):
@@ -21,31 +24,37 @@ class DatesService:
 
     def get_dates_data(self, country: str) -> List[Dict]:
         """
-        todo
-        :param country:
-        :return:
+        Uses MongoDAO to retrieve date data for a specified country and pass to
+        the list constructor. Also filters out dates with no cases.
+
+        :param country: String representing country.
+        :return: A list of date documents
         """
         data = list(self.mongo_dao.get_all_dates_by_country(country))
         LOGGER.info("Retrieved %d date documents.", len(data))
 
         return list(filter(lambda d: d["cases"], data))
 
-    def get_single_date(self, date: str):
+    def get_single_date(self, date: str) -> Dict:
         """
-        todo
-        :param date:
-        :return:
+        Uses MongoDAO to retrieve data for a single specified date, or custom
+        object if not found.
+
+        :param date: String representing date to search.
+        :return: Date document if found.
         """
         date_obj = datetime.datetime.strptime(date, "%Y-%m-%d")
         data = self.mongo_dao.get_one_document_by_date(date_obj)
 
         return data if data else {"not found": "no data for that date"}
 
-    def insert_multiple_dates(self, dates: list):
+    def insert_multiple_dates(self, dates: list) -> Optional[InsertManyResult]:
         """
-        todo
-        :param dates:
-        :return:
+        Uses MongoDAO to insert 1 to n new documents of transformed data
+        requested from covid-19 data repo.
+
+        :param dates: A list of documents to insert.
+        :return: InsertManyResult object describing our insert success.
         """
         if not dates:
             LOGGER.info("No Documents to insert!")
@@ -59,9 +68,3 @@ class DatesService:
 
         return result if result else None
 
-    def _convert_dates_data(self):
-        """
-        todo
-        :return:
-        """
-        pass

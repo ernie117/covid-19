@@ -8,8 +8,8 @@ def create_app():
     app.config.from_object(DevConfig())
 
     with app.app_context():
-        from .routes import data_page
+        from webapp.views.dates import dates_blueprint
 
-        app.register_blueprint(data_page)
+        app.register_blueprint(dates_blueprint)
 
     return app

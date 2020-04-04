@@ -11,10 +11,10 @@ from webapp.utils.utils import purge_images
 DATES_SERVICE = DatesService()
 COUNTRIES_SERVICE = CountriesService()
 
-data_page = Blueprint("data", __name__)
+dates_blueprint = Blueprint("data", __name__)
 
 
-@data_page.route("/<country>")
+@dates_blueprint.route("/<country>")
 def home(country: str):
     purge_images()
 
@@ -29,21 +29,21 @@ def home(country: str):
                            countries=COUNTRIES_SERVICE.get_latest_countries())
 
 
-@data_page.route("/function/update")
+@dates_blueprint.route("/function/update")
 def update():
     return Covid19DateDataRTL().execute_rtl()
 
 
-@data_page.route("/api/date/<date>")
+@dates_blueprint.route("/api/date/<date>")
 def json_for_date(date: str):
     return jsonify(DATES_SERVICE.get_single_date(date))
 
 
-@data_page.route("/api/country/<country>")
+@dates_blueprint.route("/api/country/<country>")
 def json_for_country(country: str):
     return jsonify(DATES_SERVICE.get_dates_data(country))
 
 
-@data_page.route("/countries")
+@dates_blueprint.route("/countries")
 def get_latest_countries():
     return jsonify(COUNTRIES_SERVICE.get_latest_countries())
