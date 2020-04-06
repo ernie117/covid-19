@@ -2,7 +2,6 @@
 Contains a class responsible for requesting new CSV covid-19 data.
 """
 import csv
-import glob
 import re
 from pathlib import Path
 from typing import Dict, Set
@@ -11,7 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 from flask import current_app
 
-from webapp.loggers.loggers import build_logger
+from webapp.utils.loggers import build_logger
 
 
 class CSVRequester:
@@ -37,8 +36,8 @@ class CSVRequester:
 
     def request_new_csv(self, url: str, github_filename: str) -> Dict:
         """
-        Checks our list of csv files against those available in
-        the COVID-19 repo and identify any new ones to download.
+        Checks our list of csv files against those available in the COVID-19 repo
+        and identify any new ones to download.
 
         :return: Dict of new csv filename as key with data as value
         """
@@ -47,9 +46,7 @@ class CSVRequester:
         if github_filename not in files:
             self.logger.info("New data for %s. Downloading...", github_filename)
             response = requests.get(url).content.decode("utf-8-sig")
-            self._write_new_csv_to_file(
-                github_filename,
-                response)
+            self._write_new_csv_to_file(github_filename, response)
             data = csv.DictReader(response.splitlines())
             new_data[github_filename.split(".")[0]] = data
             self._write_new_date_to_file(github_filename)
@@ -58,8 +55,8 @@ class CSVRequester:
 
     def _get_urls(self) -> Set:
         """
-        Interrogates the requested HTML for hrefs leading to COVID-19
-        csv data files and their filenames (dates).
+        Interrogates the requested HTML for hrefs leading to COVID-19 csv data
+        files and their filenames (dates).
 
         :return: Dict of URLs for csv data and filenames
         """
@@ -74,8 +71,8 @@ class CSVRequester:
 
     def _request_repo_html(self) -> BeautifulSoup:
         """
-        Simply requests the webpage content from the daily reports
-        data page of Johns Hopkins COVID-19 repo.
+        Simply requests the webpage content from the daily reports data page of
+        Johns Hopkins COVID-19 repo.
 
         :return: BeautifulSoup object of html
         """

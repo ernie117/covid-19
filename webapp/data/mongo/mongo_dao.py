@@ -10,7 +10,7 @@ from pymongo.command_cursor import CommandCursor
 from pymongo.cursor import Cursor
 from pymongo.results import InsertManyResult, InsertOneResult
 
-from webapp.loggers.loggers import build_logger
+from webapp.utils.loggers import build_logger
 
 LOGGER = build_logger("MongoDAO")
 

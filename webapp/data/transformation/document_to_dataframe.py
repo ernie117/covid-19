@@ -3,7 +3,7 @@ from typing import Dict, List
 import pandas
 from pandas import DataFrame
 
-from webapp.loggers.loggers import build_logger
+from webapp.utils.loggers import build_logger
 
 LOGGER = build_logger("DocumentConverter")
 

@@ -4,8 +4,8 @@ collection.
 """
 from typing import List
 
-from webapp.data.loading.mongo_dao import MongoDAO
-from webapp.loggers.loggers import build_logger
+from webapp.data.mongo.mongo_dao import MongoDAO
+from webapp.utils.loggers import build_logger
 
 
 class CountriesService:

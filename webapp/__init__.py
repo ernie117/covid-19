@@ -8,8 +8,12 @@ def create_app():
     app.config.from_object(DevConfig())
 
     with app.app_context():
-        from webapp.views.dates import dates_blueprint
+        from webapp.dates.routes import dates
+        # from webapp.countries.routes import countries
+        from webapp.rest.routes import restful
 
-        app.register_blueprint(dates_blueprint)
+        app.register_blueprint(dates)
+        # app.register_blueprint(countries)
+        app.register_blueprint(restful)
 
     return app

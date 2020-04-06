@@ -9,8 +9,8 @@ from pymongo.results import InsertManyResult
 
 from webapp.data.requesting.csv_requester import CSVRequester
 from webapp.data.transformation.csv_date_transformer import CSVDateTransformer
-from webapp.loggers.loggers import build_logger
-from webapp.services.dates_service import DatesService
+from webapp.utils.loggers import build_logger
+from webapp.dates.dates_service import DatesService
 
 
 class Covid19DateDataRTL:
@@ -43,7 +43,7 @@ class Covid19DateDataRTL:
         self.logger.info("Loading new transformed data.")
         result = self._load(date_documents)
         if result and result.acknowledged:
-            return "Data updated for " + str(dates)
+            return "Data updated for:\n" + "\n".join(dates)
 
     def _request(self, url: str, filename: str) -> Dict:
         """

@@ -8,7 +8,7 @@ import seaborn as sns
 from matplotlib.font_manager import FontProperties
 from pandas import DataFrame
 
-from webapp.loggers.loggers import build_logger
+from webapp.utils.loggers import build_logger
 
 
 class SeabornLinePlotter:

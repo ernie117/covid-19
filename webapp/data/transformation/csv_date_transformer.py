@@ -6,7 +6,7 @@ import datetime
 from typing import List, Dict
 
 from webapp.data.transformation.country_transformer import CountryTransformer
-from webapp.loggers.loggers import build_logger
+from webapp.utils.loggers import build_logger
 
 
 class CSVDateTransformer:
@@ -44,9 +44,9 @@ class CSVDateTransformer:
         """
         Create an intermediate structure for transformation. The structure of
         dicts in the DictReader is altered to dicts with custom keys, removing
-        excluding latitude, longitude, last update and others. Also transforms
-        country names to preferred/consistent names. Dicts are returned in a list
-        sorted alphabetically by country.
+        latitude, longitude, last-updated and others. Also transforms country
+        names to preferred/consistent names. Dicts are returned in a list sorted
+        alphabetically by country.
 
         Example resulting dict:
         {
@@ -101,7 +101,7 @@ class CSVDateTransformer:
                     "confirmed": 10,
                     "recovered": 0,
                     "deaths": 0
-                }
+                },
                 ...
             ]
         }
