@@ -32,13 +32,19 @@ class DatesService:
         """
         data = list(self.mongo_dao.get_all_dates_by_country(country))
         LOGGER.info("Retrieved %d date documents.", len(data))
+        filtered_sorted = sorted(list(filter(lambda d: d["cases"], data)),
+                                 key=lambda d: d["date"])
 
-        return list(filter(lambda d: d["cases"], data))
+        # Flattening the cases arrays that only ever hold one element
+        for obj in filtered_sorted:
+            obj["cases"] = obj["cases"][0]
+
+        return filtered_sorted
 
     def get_single_date(self, date: str) -> Dict:
         """
-        Uses MongoDAO to retrieve data for a single specified date, or custom
-        object if not found.
+        Uses MongoDAO to retrieve data for a single specified date, returns
+        custom object if not found.
 
         :param date: String representing date to search.
         :return: Date document if found.
@@ -50,7 +56,7 @@ class DatesService:
 
     def insert_multiple_dates(self, dates: list) -> Optional[InsertManyResult]:
         """
-        Uses MongoDAO to insert 1 to n new documents of transformed data
+        Uses MongoDAO to insert 1..n new documents of transformed data
         requested from covid-19 data repo.
 
         :param dates: A list of documents to insert.
@@ -67,4 +73,3 @@ class DatesService:
             LOGGER.info("Documents not inserted!")
 
         return result if result else None
-

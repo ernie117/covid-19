@@ -31,7 +31,7 @@ class DocumentConverter:
 
         for document in self.data:
             temp_dict["dates"].append(document["date"])
-            cases = document["cases"][0]
+            cases = document["cases"]
             temp_dict["confirmed"].append(cases["confirmed"])
             temp_dict["recovered"].append(cases["recovered"])
             temp_dict["deaths"].append(cases["deaths"])

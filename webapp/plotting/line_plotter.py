@@ -61,10 +61,8 @@ class SeabornLinePlotter:
         ax.grid(color="black", linewidth=0.3)
         ax.set_xlabel("Dates", fontdict=font, labelpad=10)
         ax.set_ylabel("COVID-19 Cases", fontdict=font, labelpad=10)
-        plt.xticks(self.dataframe["dates"],
-                   self.dataframe["dates"],
-                   fontsize=10,
-                   rotation=70)
+        plt.xticks(ticks=self.dataframe["dates"], labels=self.dataframe["dates"],
+                   fontsize=10, rotation=70)
         plt.yticks(fontsize=12)
         plt.legend(prop=FontProperties(family="IBM Plex Mono Medium", size=12))
         plt.tight_layout(pad=0.3)
