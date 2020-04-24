@@ -14,6 +14,7 @@ class CSVDateTransformer:
     Class containing all logic required to transform CSV data from GitHub into
     custom dictionary objects representing documents to be persisted in Mongo.
     """
+
     COUNTRY_REGION: str = "Country_Region"
     COUNTRY_REGION_OLD: str = "Country/Region"
     PROVINCE_STATE: str = "Province_State"
@@ -73,18 +74,21 @@ class CSVDateTransformer:
             country_transformer = CountryTransformer(country)
             custom_country = country_transformer.transform()
 
-            new_dicts.append({
-                self.COUNTRY_REGION_LC: custom_country,
-                "province/state": province,
-                "confirmed": row["Confirmed"],
-                "recovered": row["Recovered"],
-                "deaths": row["Deaths"]
-            })
+            new_dicts.append(
+                {
+                    self.COUNTRY_REGION_LC: custom_country,
+                    "province/state": province,
+                    "confirmed": row["Confirmed"],
+                    "recovered": row["Recovered"],
+                    "deaths": row["Deaths"],
+                }
+            )
 
         return sorted(new_dicts, key=lambda d: d[self.COUNTRY_REGION_LC])
 
-    def _create_documents(self, date: str,
-                          list_of_custom_dicts: List[Dict]) -> Dict[str, any]:
+    def _create_documents(
+        self, date: str, list_of_custom_dicts: List[Dict]
+    ) -> Dict[str, any]:
         """
         Given a list of custom dicts provided by _create_custom_dicts, cases of
         each country's provinces/states are summed to provide totals for
@@ -110,14 +114,13 @@ class CSVDateTransformer:
         :param list_of_custom_dicts: Dicts produced by _create_custom_dicts
         :return: Final transformed Dict representing a Document to be persisted
         """
-        countries = sorted({d[self.COUNTRY_REGION_LC]
-                            for d in list_of_custom_dicts})
+        countries = sorted({d[self.COUNTRY_REGION_LC] for d in list_of_custom_dicts})
 
         # Sum the confirmed, recovered and deaths for each region of a country
         # to have a total confirmed, recovered and deaths for each country
         building_dictionary = {
             "date": datetime.datetime.strptime(date, "%m-%d-%Y"),
-            "countries": []
+            "countries": [],
         }
 
         confirmed = 0
@@ -135,12 +138,14 @@ class CSVDateTransformer:
                 else:
                     continue
 
-            building_dictionary["countries"].append({
-                self.COUNTRY_REGION_LC: country,
-                "confirmed": confirmed,
-                "recovered": recovered,
-                "deaths": deaths
-            })
+            building_dictionary["countries"].append(
+                {
+                    self.COUNTRY_REGION_LC: country,
+                    "confirmed": confirmed,
+                    "recovered": recovered,
+                    "deaths": deaths,
+                }
+            )
 
             confirmed = 0
             recovered = 0

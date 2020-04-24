@@ -57,7 +57,7 @@ class CountriesService:
         if result.acknowledged:
             self.logger.info(
                 "Inserted list of %d countries to 'countries' collection",
-                len(countries)
+                len(countries),
             )
         else:
             self.logger.warn("New countries not inserted!")

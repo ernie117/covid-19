@@ -2,6 +2,7 @@
 Contains a class responsible for requesting new CSV covid-19 data.
 """
 import csv
+import os
 import re
 from pathlib import Path
 from typing import Dict, Set
@@ -18,6 +19,7 @@ class CSVRequester:
     Class containing the functionality to check for new CSV data, request it,
     and write it to file should it be downloaded.
     """
+
     new_data: dict = {}
 
     def __init__(self):
@@ -84,7 +86,7 @@ class CSVRequester:
 
         :param date: String of date
         """
-        with open(Path(current_app.config["CURRENT_DATES_FILE"]), "a") as f_obj:
+        with open(Path("webapp/COVID-19-data/current_filenames.txt"), "a") as f_obj:
             f_obj.write(date + "\n")
 
         self.logger.info("New date added to current dates file!")
@@ -97,8 +99,7 @@ class CSVRequester:
         :param data: DictReader of dicts representing CSV data.
         :return:
         """
-        with open(Path("webapp/COVID-19-data/" + date), "w",
-                  newline="") as file_obj:
+        with open(Path("webapp/COVID-19-data/" + date), "w", newline="") as file_obj:
             writer = csv.writer(file_obj)
             reader = csv.reader(data.splitlines())
             for line in reader:

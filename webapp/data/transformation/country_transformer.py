@@ -1,21 +1,8 @@
-"""
-todo
-"""
 from .country_map import country_map
 
 
 class CountryTransformer:
-    """
-    todo
-    """
-    country_map = country_map
 
-    def __init__(self, country: str):
-        self.country = country.lower()
-
-    def transform(self):
-        """
-        todo
-        :return:
-        """
-        return self.country_map.get(self.country, self.country)
+    @staticmethod
+    def transform(country: str):
+        return country_map.get(country.lower(), country.title())

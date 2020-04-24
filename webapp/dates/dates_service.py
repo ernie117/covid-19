@@ -32,8 +32,9 @@ class DatesService:
         """
         data = list(self.mongo_dao.get_all_dates_by_country(country))
         LOGGER.info("Retrieved %d date documents.", len(data))
-        filtered_sorted = sorted(list(filter(lambda d: d["cases"], data)),
-                                 key=lambda d: d["date"])
+        filtered_sorted = sorted(
+            list(filter(lambda d: d["cases"], data)), key=lambda d: d["date"]
+        )
 
         # Flattening the cases arrays that only ever hold one element
         for obj in filtered_sorted:

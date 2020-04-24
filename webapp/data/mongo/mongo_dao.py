@@ -5,6 +5,7 @@ Contains the class acting as the direct interface to a standalone MongoDB
 import datetime
 from typing import Dict, List
 
+from flask import current_app
 from pymongo import MongoClient, WriteConcern
 from pymongo.command_cursor import CommandCursor
 from pymongo.cursor import Cursor
@@ -21,7 +22,11 @@ class MongoDAO:
     a standalone mongo instance to retrieve and insert documents to and from the
     'covid-19' db.
     """
-    client = MongoClient()
+
+    client = MongoClient(
+        username=current_app.config["MONGO_USERNAME"],
+        password=current_app.config["MONGO_PASSWORD"],
+    )
     db = client.get_database("covid-19")
 
     def __init__(self, collection_name: str):
@@ -48,8 +53,11 @@ class MongoDAO:
         :param documents: Multiple dicts representing documents to be persisted.
         :return: InsertManyResult representing our write result.
         """
-        LOGGER.info("Inserting %d documents into %s collection",
-                    len(documents), self.collection_name)
+        LOGGER.info(
+            "Inserting %d documents into %s collection",
+            len(documents),
+            self.collection_name,
+        )
 
         return self.collection.insert_many(documents)
 
@@ -63,10 +71,7 @@ class MongoDAO:
         """
         LOGGER.info("Retrieving documents by date %s.", date)
 
-        return self.collection.find_one(
-            {"date": {"$eq": date}},
-            {"_id": False}
-        )
+        return self.collection.find_one({"date": {"$eq": date}}, {"_id": False})
 
     def get_all_dates_by_country(self, country: str) -> CommandCursor:
         """
@@ -75,18 +80,21 @@ class MongoDAO:
 
         :return: CommandCursor iterator of matching documents.
         """
-        LOGGER.info("Retrieving multiple dates for %s by aggregate.",
-                    country)
+        LOGGER.info("Retrieving multiple dates for %s by aggregate.", country)
         pipeline = [
-            {'$project': {
-                'cases': {'$filter': {
-                    'input': '$countries',
-                    'as': 'cases',
-                    'cond': {'$eq': ['$$cases.country/region', country]}
+            {
+                "$project": {
+                    "cases": {
+                        "$filter": {
+                            "input": "$countries",
+                            "as": "cases",
+                            "cond": {"$eq": ["$$cases.country/region", country]},
+                        }
+                    },
+                    "date": 1,
+                    "_id": 0,
                 }
-                },
-                'date': 1,
-                '_id': 0}}
+            }
         ]
 
         return self.collection.aggregate(pipeline=pipeline)

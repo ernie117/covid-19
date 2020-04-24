@@ -1,12 +1,12 @@
 country_map = {
-    "mainland china": "china",
-    "uk": "united kingdom",
-    "us": "united states",
-    "congo (brazzaville)": "congo",
-    "congo (kinshasa)": "congo",
-    "republic of the congo": "congo",
-    "viet nam": "vietnam",
-    "taiwan*": "taiwan",
-    "republic of korea": "south korea",
-    "korea, south": "south korea"
+    "mainland china": "China",
+    "uk": "United Kingdom",
+    "us": "United States",
+    "congo (brazzaville)": "Congo",
+    "congo (kinshasa)": "Congo",
+    "republic of the congo": "Congo",
+    "viet nam": "Vietnam",
+    "taiwan*": "Taiwan",
+    "republic of korea": "South korea",
+    "korea, south": "South korea",
 }

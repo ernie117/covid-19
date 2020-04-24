@@ -1,6 +1,6 @@
 from flask import Flask
 
-from config.flask_config import DevConfig
+from .config.flask_config import DevConfig
 
 
 def create_app():
@@ -9,7 +9,6 @@ def create_app():
 
     with app.app_context():
         from webapp.dates.routes import dates
-        # from webapp.countries.routes import countries
         from webapp.rest.routes import restful
 
         app.register_blueprint(dates)

@@ -23,14 +23,14 @@ def home(country: str):
     plotter.set_seaborn_features()
     plotter.build_line_plot(country)
 
-    return render_template("country.html",
-                           country=country,
-                           countries=COUNTRIES_SERVICE.get_latest_countries())
+    return render_template(
+        "country.html",
+        country=country,
+        countries=COUNTRIES_SERVICE.get_latest_countries(),
+    )
 
 
 # This option will be on the home page eventually
 @dates.route("/function/update")
 def update():
     return Covid19DateDataRTL().execute_rtl()
-
-

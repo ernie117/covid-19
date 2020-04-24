@@ -18,6 +18,7 @@ class Covid19DateDataRTL:
     Facade class that abstracts away all the logic for requesting, transforming,
     and loading new CSV date data into MongoDB.
     """
+
     logger = build_logger("Covid19DateDataRTL")
     dates_service = DatesService()
     csv_requester = CSVRequester()

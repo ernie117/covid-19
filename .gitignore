@@ -6,3 +6,4 @@ config/
 webapp/static/images
 gitignore
 .ipynb_checkpoints/
+.flaskenv

@@ -36,24 +36,27 @@ class SeabornLinePlotter:
 
         :param country: Country for which we are plotting data
         """
-        self.logger.info("Building plot figure for %s date data.",
-                         country)
+        self.logger.info("Building plot figure for %s date data.", country)
         plt.figure(figsize=(15, 9))
-        for case, colour in (("confirmed", "blue"),
-                             ("recovered", "green"),
-                             ("deaths", "orange")):
-            ax = sns.lineplot(x="dates",
-                              y=case,
-                              marker="o",
-                              markersize=5,
-                              label=case.title(),
-                              color=colour,
-                              data=self.dataframe)
+        for case, colour in (
+            ("confirmed", "blue"),
+            ("recovered", "green"),
+            ("deaths", "orange"),
+        ):
+            ax = sns.lineplot(
+                x="dates",
+                y=case,
+                marker="o",
+                markersize=5,
+                label=case.title(),
+                color=colour,
+                data=self.dataframe,
+            )
 
         font = {
             "family": "IBM Plex Mono",
             "color": "black",
-            "weight": "normal",
+            "weight": "medium",
             "size": 14,
         }
 
@@ -61,8 +64,12 @@ class SeabornLinePlotter:
         ax.grid(color="black", linewidth=0.3)
         ax.set_xlabel("Dates", fontdict=font, labelpad=10)
         ax.set_ylabel("COVID-19 Cases", fontdict=font, labelpad=10)
-        plt.xticks(ticks=self.dataframe["dates"], labels=self.dataframe["dates"],
-                   fontsize=10, rotation=70)
+        plt.xticks(
+            ticks=self.dataframe["dates"],
+            labels=self.dataframe["dates"],
+            fontsize=10,
+            rotation=70,
+        )
         plt.yticks(fontsize=12)
         plt.legend(prop=FontProperties(family="IBM Plex Mono Medium", size=12))
         plt.tight_layout(pad=0.3)
